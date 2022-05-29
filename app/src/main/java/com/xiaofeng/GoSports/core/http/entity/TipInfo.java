@@ -13,6 +13,14 @@ public class TipInfo {
     private String title;
     private String content;
 
+    public TipInfo() {
+    }
+
+    public TipInfo(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
     public String getTitle() {
         return title;
     }

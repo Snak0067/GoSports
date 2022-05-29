@@ -23,6 +23,7 @@ import com.xuexiang.xui.widget.dialog.BaseDialog;
 import com.xuexiang.xutil.app.AppUtils;
 import com.zzhoujay.richtext.RichText;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,20 +62,24 @@ public class GuideTipsDialog extends BaseDialog implements View.OnClickListener,
      * @param context 上下文
      */
     public static void showTipsForce(Context context) {
-        CustomRequest request = XHttp.custom().cacheMode(CacheMode.FIRST_CACHE).cacheTime(TimeConstants.DAY).cacheKey("getTips");
-        request.apiCall(request.create(ApiService.IGetService.class).getTips(), new NoTipCallBack<List<TipInfo>>() {
-            @Override
-            public void onSuccess(List<TipInfo> response) throws Throwable {
-                if (response != null && response.size() > 0) {
-                    new GuideTipsDialog(context, response).show();
-                }
-            }
-        });
+        List<TipInfo> tipInfoList = new ArrayList<>();
+        tipInfoList.add(new TipInfo("马晓峰CSDN主页", "<a href=\"https://blog.csdn.net/kuLong_x?type=blog\">少年的成长，码出未来</a>"));
+        tipInfoList.add(new TipInfo("马晓峰Gitee主页", "点击关注作者，了解最新动态！<br /><a href=\"https://gitee.com/XiaoFengCodeSpace\"><font color=\"#800080\">Xiaofeng_Gitee</font></a>"));
+        new GuideTipsDialog(context, tipInfoList).show();
     }
 
+    /**
+     * 获取强制弹窗的上下文以及内容列表信息
+     *
+     * @param context
+     * @param tips
+     */
     public GuideTipsDialog(Context context, @NonNull List<TipInfo> tips) {
+        //集成BaseDialog 基础的弹窗列表
         super(context, R.layout.dialog_guide_tips);
+        //初始话弹窗列表信息
         initViews();
+        //更新显示的列表信息
         updateTips(tips);
     }
 
@@ -82,12 +87,17 @@ public class GuideTipsDialog extends BaseDialog implements View.OnClickListener,
      * 初始化弹窗
      */
     private void initViews() {
+        //弹窗主标题
         mTvTitle = findViewById(R.id.tv_title);
+        //弹窗内容
         mTvContent = findViewById(R.id.tv_content);
+        //是否确认忽视不再提示弹窗
         AppCompatCheckBox cbIgnore = findViewById(R.id.cb_ignore);
+        //右上角的关闭
         ImageView ivClose = findViewById(R.id.iv_close);
-
+        //上一条
         mTvPrevious = findViewById(R.id.tv_previous);
+        //下一条
         mTvNext = findViewById(R.id.tv_next);
 
         if (cbIgnore != null) {

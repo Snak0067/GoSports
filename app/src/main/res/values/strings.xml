@@ -6,7 +6,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="menu_news">运动</string>
-    <string name="menu_trending">分析</string>
+    <string name="menu_trending">历史记录</string>
     <string name="menu_profile">我的</string>
 
     <string name="menu_notifications">通知</string>
@@ -16,13 +16,11 @@
     <string name="menu_settings">设置</string>
     <string name="menu_about">关于</string>
 
-    <string name="about_copyright">© %1$s xuexiangjys All rights reserved.</string>
-    <string name="about_item_homepage">访问官网</string>
-    <string name="about_item_author_github">联系作者</string>
-    <string name="about_item_donation_link">捐赠作者</string>
-    <string name="about_item_add_qq_group">QQ交流群</string>
-    <string name="url_project_github">https://github.com/xuexiangjys/TemplateAppProject</string>
-    <string name="url_author_github">https://gitee.com/xuexiangjys/xuexiangjys</string>
+    <string name="about_copyright">© %1$s ZJUT 马晓峰 All rights reserved.</string>
+    <string name="about_item_homepage">访问项目网址</string>
+    <string name="about_item_author_github">联系晓峰</string>
+    <string name="url_project_github">https://github.com/Snak0067/GoSports</string>
+    <string name="url_author_github">https://gitee.com/XiaoFengCodeSpace</string>
     <string name="url_donation_link">https://gitee.com/xuexiangjys/Resource/blob/master/doc/sponsor.md</string>
     <string name="url_add_qq_group">http://qm.qq.com/cgi-bin/qm/qr?k=tiP-E6rDf0y77PRNfp2lNVcc9RsglPCM</string>
 

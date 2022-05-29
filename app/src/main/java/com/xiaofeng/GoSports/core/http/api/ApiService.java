@@ -27,7 +27,7 @@ import retrofit2.http.GET;
 
 /**
  * @author xiaofeng
- * @since 2021/1/9 7:01 PM
+ * @since 2022/4/9 7:01 PM
  */
 public class ApiService {
 
@@ -39,7 +39,7 @@ public class ApiService {
         /**
          * 获得小贴士
          */
-        @GET("/xuexiangjys/Resource/raw/master/jsonapi/tips.json")
+        @GET("/app/src/main/assets/tips.json")
         Observable<ApiResult<List<TipInfo>>> getTips();
     }
 
