@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--有公司logo-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
+
+    <item >
+        <bitmap
+            android:gravity="fill"
+            android:src="@drawable/mc_bg_start" />
+    </item>
+</layer-list>
