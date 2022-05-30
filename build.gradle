@@ -21,6 +21,9 @@ buildscript {
 
 allprojects {
     addRepos(repositories)
+    repositories {
+        jcenter() // 或者 mavenCentral()
+    }
 }
 
 task clean(type: Delete) {
