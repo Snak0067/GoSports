@@ -7,11 +7,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +28,11 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.xiaofeng.GoSports.R;
+import com.xiaofeng.GoSports.utils.SettingUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -102,6 +108,13 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                 //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
             }
         });
+
+        //高德隐私政策弹窗
+        if (!SettingUtils.isAgreeMapPrivacy()) {
+            privacyCompliance();
+        }
+        SettingUtils.setIsAgreeMapPrivacy(true);
+
     }
 
     private void setUp(AMap amap) {
@@ -110,6 +123,21 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         uiSettings.setScaleControlsEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
     }
+
+    private void privacyCompliance() {
+        MapsInitializer.updatePrivacyShow(RunningActivity.this, true, true);
+        SpannableStringBuilder spannable = new SpannableStringBuilder("\"亲，感谢您对GoSports一直以来的信任！我们依据最新的监管要求更新了GoSports《隐私权政策》，特向您说明如下\n1.为向您提供交易相关基本功能，我们会收集、使用必要的信息；\n2.基于您的明示授权，我们可能会获取您的位置（为您提供附近的商品、店铺及优惠资讯等）等信息，您有权拒绝或取消授权；\n3.我们会采取业界先进的安全措施保护您的信息安全；\n4.未经您同意，我们不会从第三方处获取、共享或向提供您的信息；\n");
+        spannable.setSpan(new ForegroundColorSpan(Color.BLUE), 35, 42, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        AlertDialog privaryDialog = new AlertDialog.Builder(this)
+                .setTitle("高德地图温馨提示(隐私合规示例)")
+                .setMessage(spannable)
+                .setPositiveButton("同意", (dialogInterface, i) -> MapsInitializer.updatePrivacyAgree(RunningActivity.this, true))
+                .setNegativeButton("不同意", (dialogInterface, i) -> MapsInitializer.updatePrivacyAgree(RunningActivity.this, false))
+                .show();
+
+    }
+
     /*************************************** 定位监听******************************************************/
     /**
      * 激活定位

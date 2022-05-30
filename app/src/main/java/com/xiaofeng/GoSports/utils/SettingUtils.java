@@ -17,6 +17,9 @@ public final class SettingUtils {
 
     private static final String IS_AGREE_PRIVACY_KEY = "is_agree_privacy_key";
 
+    private static final String IS_AGREE_GAODE_PRIVACY_KEY = "is_agree_gaode_privacy_key";
+
+
     /**
      * 是否是第一次启动
      */
@@ -47,6 +50,24 @@ public final class SettingUtils {
      */
     public static void setIsAgreePrivacy(boolean isAgreePrivacy) {
         MMKVUtils.put(IS_AGREE_PRIVACY_KEY, isAgreePrivacy);
+    }
+
+    /**
+     * 获取是否同意高德隐私政策
+     *
+     * @return 是否同意高德隐私政策
+     */
+    public static boolean isAgreeMapPrivacy() {
+        return MMKVUtils.getBoolean(IS_AGREE_GAODE_PRIVACY_KEY, false);
+    }
+
+    /**
+     * 设置是否同意高德隐私政策
+     *
+     * @param isAgreePrivacy 是否同意高德隐私政策
+     */
+    public static void setIsAgreeMapPrivacy(boolean isAgreePrivacy) {
+        MMKVUtils.put(IS_AGREE_GAODE_PRIVACY_KEY, isAgreePrivacy);
     }
 
 

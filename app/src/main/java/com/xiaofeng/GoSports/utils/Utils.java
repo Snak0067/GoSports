@@ -31,7 +31,9 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
+import com.amap.api.maps.MapsInitializer;
 import com.xiaofeng.GoSports.R;
+import com.xiaofeng.GoSports.activity.MainActivity;
 import com.xiaofeng.GoSports.core.webview.AgentWebActivity;
 import com.xiaofeng.GoSports.fragment.other.ServiceProtocolFragment;
 import com.xuexiang.xpage.base.XPageFragment;
@@ -51,7 +53,7 @@ import static com.xiaofeng.GoSports.fragment.other.ServiceProtocolFragment.KEY_P
  * 工具类
  *
  * @author xiaofeng
- * @since 2020-02-23 15:12
+ * @since 2022-05-23 15:12
  */
 public final class Utils {
 
@@ -72,13 +74,14 @@ public final class Utils {
      * @return
      */
     public static Dialog showPrivacyDialog(Context context, MaterialDialog.SingleButtonCallback submitListener) {
-        MaterialDialog dialog = new MaterialDialog.Builder(context).title(R.string.title_reminder).autoDismiss(false).cancelable(false)
+       MaterialDialog dialog = new MaterialDialog.Builder(context).title(R.string.title_reminder).autoDismiss(false).cancelable(false)
                 .positiveText(R.string.lab_agree).onPositive((dialog1, which) -> {
                     if (submitListener != null) {
                         submitListener.onClick(dialog1, which);
                     } else {
                         dialog1.dismiss();
                     }
+
                 })
                 .negativeText(R.string.lab_disagree).onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override

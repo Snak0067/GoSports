@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import com.amap.api.services.core.ServiceSettings;
 import com.xiaofeng.GoSports.LoginActivity;
 import com.xiaofeng.GoSports.core.BaseFragment;
 import com.xiaofeng.GoSports.utils.Utils;
@@ -29,6 +30,7 @@ import com.xuexiang.xui.utils.ThemeUtils;
 import com.xuexiang.xui.utils.ViewUtils;
 import com.xuexiang.xui.widget.actionbar.TitleBar;
 import com.xuexiang.xutil.app.ActivityUtils;
+
 /**
  * 登录页面
  *
@@ -178,7 +180,6 @@ public class LoginFragment extends BaseFragment<FragmentPhoneLoginBinding> imple
         }
         super.onDestroyView();
     }
-
 
 
 }

@@ -1,7 +1,13 @@
 package com.xiaofeng.GoSports.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -14,6 +20,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import com.amap.api.maps.MapsInitializer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.xiaofeng.GoSports.core.BaseActivity;
 import com.xiaofeng.GoSports.core.BaseFragment;
@@ -63,6 +70,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         initData();
 
         initListeners();
+
     }
 
 
@@ -91,6 +99,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.includeMain.viewPager.setOffscreenPageLimit(mTitles.length - 1);
         binding.includeMain.viewPager.setAdapter(adapter);
     }
+
+
 
     private void initData() {
         //首次进入页面的弹窗提示框
