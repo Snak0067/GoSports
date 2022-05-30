@@ -13,6 +13,7 @@ import com.alibaba.android.vlayout.VirtualLayoutManager;
 import com.alibaba.android.vlayout.layout.GridLayoutHelper;
 import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
 import com.xiaofeng.GoSports.core.BaseFragment;
+import com.xiaofeng.GoSports.fragment.running.RunningFragment;
 import com.xiaofeng.GoSports.utils.Utils;
 import com.xiaofeng.GoSports.R;
 import com.xiaofeng.GoSports.adapter.base.broccoli.BroccoliSimpleDelegateAdapter;
@@ -96,7 +97,14 @@ public class MainActivity_NewsFragment extends BaseFragment<FragmentNewsBinding>
                     holder.click(R.id.ll_container, v -> {
                         XToastUtils.toast("点击了：" + item.getTitle());
                         // 注意: 这里由于NewsFragment是使用Viewpager加载的，并非使用XPage加载的，因此没有承载Activity， 需要使用openNewPage。
-                        openNewPage(GridItemFragment.class, GridItemFragment.KEY_TITLE_NAME, item.getTitle());
+                        switch (item.getTitle().toString()){
+                            case "跑步":
+                                openNewPage(RunningFragment.class, GridItemFragment.KEY_TITLE_NAME, item.getTitle());
+                                break;
+                            default:
+                                openNewPage(GridItemFragment.class, GridItemFragment.KEY_TITLE_NAME, item.getTitle());
+                        }
+
                     });
                 }
             }
