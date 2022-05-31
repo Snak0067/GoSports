@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,28 +28,47 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.trace.LBSTraceClient;
+import com.amap.api.trace.TraceListener;
+import com.amap.api.trace.TraceLocation;
+import com.amap.api.trace.TraceOverlay;
 import com.xiaofeng.GoSports.R;
+import com.xiaofeng.GoSports.fragment.Walking.RecordActivity;
+import com.xiaofeng.GoSports.fragment.Walking.WalkingActivity;
 import com.xiaofeng.GoSports.utils.SettingUtils;
 import com.xiaofeng.GoSports.utils.TimerUtils;
 import com.xiaofeng.GoSports.utils.VoiceUtils;
 import com.xiaofeng.GoSports.utils.XToastUtils;
+import com.xiaofeng.GoSports.utils.path.DbAdapter;
+import com.xiaofeng.GoSports.utils.path.PathRecord;
+import com.xiaofeng.GoSports.utils.path.RecordUtil;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xui.widget.dialog.strategy.impl.MaterialDialogStrategy;
 import com.xuexiang.xui.widget.toast.XToast;
 
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RunningActivity extends AppCompatActivity implements LocationSource, AMapLocationListener {
+public class RunningActivity extends AppCompatActivity implements LocationSource, AMapLocationListener, TraceListener {
     MapView mMapView = null;
     /**
      * 程序调试信息
@@ -57,14 +78,17 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
      * 设置对话框策略
      */
     private DialogLoader mDialogLoader;
-
+    /**
+     * 运动状态相关
+     */
+    private int steps = 0;
+    /**
+     * 计时器相关
+     */
     private Timer mTimer = null;
     private TimerTask mTimerTask = null;
     private Handler mHandler = null;
     private static int count = 0;
-    /**
-     * 当前计时器的状态
-     */
     private boolean isPause = false;
     private boolean isStop = true;
     private static int delay = 1000;  //1s
@@ -79,7 +103,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
     AMap aMap;
     //初始化布局控件
     Button btn_start, btn_stop, btn_pause;
-    TextView TextView_speed, TextView_heartRate, TextView_steps, TextView_time, textView_distance;
+    TextView TextView_speed, TextView_heartRate, TextView_steps, TextView_time, TextView_distance;
 
     //定位需要的数据
     LocationSource.OnLocationChangedListener mListener;
@@ -88,7 +112,28 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
 
     //定位蓝点
     MyLocationStyle myLocationStyle;
-
+    /**
+     * 轨迹显示相关
+     */
+    private PolylineOptions mPolyoptions, tracePolytion;
+    private Polyline mpolyline;
+    private PathRecord record;
+    private TraceOverlay mTraceoverlay;
+    private List<TraceLocation> mTracelocationlist = new ArrayList<TraceLocation>();
+    private List<TraceOverlay> mOverlayList = new ArrayList<TraceOverlay>();
+    private List<AMapLocation> recordList = new ArrayList<AMapLocation>();
+    private int tracesize = 30;
+    private int mDistance = 0;
+    private Marker mlocMarker;
+    /**
+     * 轨迹数据库帮助类
+     */
+    private DbAdapter DbHepler;
+    /**
+     * 时间记录类
+     */
+    private long mStartTime;
+    private long mEndTime;
     //是否需要检测后台定位权限，设置为true时，如果用户没有给予后台定位权限会弹窗提示
     private boolean needCheckBackLocation = true;
 
@@ -114,11 +159,17 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         mMapView = (MapView) findViewById(R.id.map);
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
+        init();
+
+        initpolyline();
+    }
+
+    private void init() {
         if (aMap == null) aMap = mMapView.getMap();
         /**
          * 设置控件
          */
-        textView_distance = (TextView) findViewById(R.id.textView_distance);
+        TextView_distance = (TextView) findViewById(R.id.textView_distance);
         TextView_time = (TextView) findViewById(R.id.TextView_time);
         TextView_steps = (TextView) findViewById(R.id.TextView_steps);
         TextView_heartRate = (TextView) findViewById(R.id.TextView_heartRate);
@@ -162,6 +213,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         SettingUtils.setIsAgreeMapPrivacy(true);
         //设置语音
         voiceUtils = new VoiceUtils(RunningActivity.this);
+        mTraceoverlay = new TraceOverlay(aMap);
     }
 
     public void initListeners() {
@@ -171,11 +223,22 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         btn_start.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Log.v(TAG, "用户点击开始运动");
-
                 if (isStop) {
                     isStop = !isStop;
                     voiceUtils.speakWords("开始跑步！动起来！");
                     startTimer();
+
+                    /**
+                     * 轨迹类实现
+                     */
+                    aMap.clear(true);
+                    if (record != null) {
+                        record = null;
+                    }
+                    record = new PathRecord();
+                    mStartTime = System.currentTimeMillis();
+                    record.setDate(getcueDate(mStartTime));
+                    TextView_distance.setText("0.00");
                 } else {
                     XToastUtils.info("正在跑步中....");
                 }
@@ -186,18 +249,23 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
          */
         btn_pause.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                if (isPause) {
-                    Log.i(TAG, "Resume");
-                    btn_pause.setText("暂停");
-                    XToastUtils.info("继续跑步....");
-                    voiceUtils.speakWords("继续跑步");
+                if (!isStop) {
+                    if (isPause) {
+                        Log.i(TAG, "Resume");
+                        btn_pause.setText("暂停");
+                        XToastUtils.info("继续跑步....");
+                        voiceUtils.speakWords("继续跑步");
+                    } else {
+                        Log.i(TAG, "Pause");
+                        btn_pause.setText("继续");
+                        XToastUtils.info("暂停跑步....");
+                        voiceUtils.speakWords("暂停跑步");
+                    }
+                    isPause = !isPause;
                 } else {
-                    Log.i(TAG, "Pause");
-                    btn_pause.setText("继续");
-                    XToastUtils.info("暂停跑步....");
-                    voiceUtils.speakWords("暂停跑步");
+                    voiceUtils.speakWords("运动未开始");
                 }
-                isPause = !isPause;
+
             }
         });
         /**
@@ -209,6 +277,9 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                 switch (msg.what) {
                     case UPDATE_TEXTVIEW:
                         updateTextView();
+                        updateDistances();
+                        updateSteps();
+                        updateHeartRates();
                         break;
                     default:
                         break;
@@ -221,39 +292,57 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
          */
         btn_stop.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                isPause = !isPause;
-                /**
-                 * 弹出对话框
-                 */
-                mDialogLoader.showConfirmDialog(
-                        RunningActivity.this, "结束运动提示 \n 确认结束运动吗", "确认",
-                        /**
-                         * 点击了确认，运动结束
-                         */
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                isPause = false;
-                                isStop = true;
-                                stopTimer();
-                                TextView_time.setText(TimerUtils.timeConversion(0));
-                                XToast.normal(RunningActivity.this, "运动结束").show();
-                                voiceUtils.speakWords("运动已结束");
-                                dialogInterface.dismiss();
-                            }
-                        }, "取消",
-                        /**
-                         * 点击了取消，运动继续
-                         */
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                isPause = !isPause;
-                                XToast.normal(RunningActivity.this, "运动继续").show();
-                                voiceUtils.speakWords("运动继续");
-                                dialogInterface.dismiss();
-                            }
-                        });
+                if (!isStop) {
+                    isPause = !isPause;
+                    /**
+                     * 弹出对话框
+                     */
+                    mDialogLoader.showConfirmDialog(
+                            RunningActivity.this, "结束运动提示 \n 确认结束运动吗", "确认",
+                            /**
+                             * 点击了确认，运动结束
+                             */
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    isPause = false;
+                                    isStop = true;
+                                    stopTimer();
+                                    TextView_time.setText(TimerUtils.timeConversion(0));
+                                    XToast.normal(RunningActivity.this, "运动结束").show();
+                                    voiceUtils.speakWords("运动已结束");
+                                    dialogInterface.dismiss();
+                                    /**
+                                     * 轨迹实现类
+                                     */
+                                    mEndTime = System.currentTimeMillis();
+                                    mOverlayList.add(mTraceoverlay);
+                                    LBSTraceClient mTraceClient = null;
+                                    try {
+                                        mTraceClient = new LBSTraceClient(getApplicationContext());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    mTraceClient.queryProcessedTrace(2, RecordUtil.parseTraceLocationList(record.getPathline()), LBSTraceClient.TYPE_AMAP, RunningActivity.this);
+                                    saveRecord(record.getPathline(), record.getDate());
+                                }
+                            }, "取消",
+                            /**
+                             * 点击了取消，运动继续
+                             */
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    isPause = !isPause;
+                                    XToast.normal(RunningActivity.this, "运动继续").show();
+                                    voiceUtils.speakWords("运动继续");
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                } else {
+                    voiceUtils.speakWords("运动未开始");
+                }
+
             }
         });
 
@@ -267,7 +356,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         if (mTimer == null) {
             mTimer = new Timer();
         }
-
         if (mTimerTask == null) {
             mTimerTask = new TimerTask() {
                 @Override
@@ -285,10 +373,8 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                 }
             };
         }
-
         if (mTimer != null && mTimerTask != null)
             mTimer.schedule(mTimerTask, delay, period);
-
     }
 
     /**
@@ -296,6 +382,30 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
      */
     private void updateTextView() {
         TextView_time.setText(TimerUtils.timeConversion(count));
+    }
+
+    /**
+     * 更新步数
+     */
+    private void updateSteps() {
+        steps += (int) (Math.random() * 5);
+        TextView_steps.setText(steps);
+    }
+
+    /**
+     * 更新距离
+     */
+    private void updateDistances() {
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        TextView_distance.setText(decimalFormat.format(getTotalDistance() / 1000d));
+    }
+
+    /**
+     * 更新心率
+     */
+    private void updateHeartRates() {
+        int heartRate = (int) (Math.random() * 40) + 60;
+        TextView_heartRate.setText(heartRate);
     }
 
     /**
@@ -328,11 +438,291 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         uiSettings.setMyLocationButtonEnabled(true);
     }
 
+
+    /*************************************** 定位监听******************************************************/
+    /**
+     * 激活定位
+     */
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mListener = onLocationChangedListener;
+        startlocation();
+
+    }
+
+    /**
+     * 开始定位。
+     */
+    private void startlocation() {
+        if (mlocationClient == null) {
+            try {
+                mlocationClient = new AMapLocationClient(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mLocationOption = new AMapLocationClientOption();
+            // 设置定位监听
+            mlocationClient.setLocationListener(this);
+            // 设置为高精度定位模式
+            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+
+            mLocationOption.setInterval(2000);
+
+            // 设置定位参数
+            mlocationClient.setLocationOption(mLocationOption);
+            // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+            // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+            // 在定位结束后，在合适的生命周期调用onDestroy()方法
+            // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+            mlocationClient.startLocation();
+
+        }
+    }
+
+    /**
+     * 停止定位
+     */
+    @Override
+    public void deactivate() {
+        mListener = null;
+        if (mlocationClient != null) {
+            mlocationClient.stopLocation();
+            mlocationClient.onDestroy();
+        }
+        mlocationClient = null;
+    }
+
+    protected void saveRecord(List<AMapLocation> list, String time) {
+        if (list != null && list.size() > 0) {
+            DbHepler = new DbAdapter(this);
+            DbHepler.open();
+            String duration = getDuration();
+            float distance = getDistance(list);
+            String average = getAverage(distance);
+            String pathlineSring = getPathLineString(list);
+            AMapLocation firstLocaiton = list.get(0);
+            AMapLocation lastLocaiton = list.get(list.size() - 1);
+            String stratpoint = amapLocationToString(firstLocaiton);
+            String endpoint = amapLocationToString(lastLocaiton);
+            DbHepler.createrecord(String.valueOf(distance), duration, average,
+                    pathlineSring, stratpoint, endpoint, time);
+            DbHepler.close();
+        } else {
+            Toast.makeText(RunningActivity.this, "没有记录到路径", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    private String getDuration() {
+        return String.valueOf((mEndTime - mStartTime) / 1000f);
+    }
+
+    private String getAverage(float distance) {
+        return String.valueOf(distance / (float) (mEndTime - mStartTime));
+    }
+
+    private float getDistance(List<AMapLocation> list) {
+        float distance = 0;
+        if (list == null || list.size() == 0) {
+            return distance;
+        }
+        for (int i = 0; i < list.size() - 1; i++) {
+            AMapLocation firstpoint = list.get(i);
+            AMapLocation secondpoint = list.get(i + 1);
+            LatLng firstLatLng = new LatLng(firstpoint.getLatitude(),
+                    firstpoint.getLongitude());
+            LatLng secondLatLng = new LatLng(secondpoint.getLatitude(),
+                    secondpoint.getLongitude());
+            double betweenDis = AMapUtils.calculateLineDistance(firstLatLng,
+                    secondLatLng);
+            distance = (float) (distance + betweenDis);
+        }
+        return distance;
+    }
+
+    /**
+     * 实时轨迹画线
+     */
+    private void redrawline() {
+        if (mPolyoptions.getPoints().size() > 1) {
+            if (mpolyline != null) {
+                mpolyline.setPoints(mPolyoptions.getPoints());
+            } else {
+                mpolyline = aMap.addPolyline(mPolyoptions);
+            }
+        }
+//		if (mpolyline != null) {
+//			mpolyline.remove();
+//		}
+//		mPolyoptions.visible(true);
+//		mpolyline = mAMap.addPolyline(mPolyoptions);
+//			PolylineOptions newpoly = new PolylineOptions();
+//			mpolyline = mAMap.addPolyline(newpoly.addAll(mPolyoptions.getPoints()));
+//		}
+    }
+
+    /**
+     * 定位回调  在回调方法中调用“mListener.onLocationChanged(amapLocation);”可以在地图上显示系统小蓝点。
+     *
+     * @param amapLocation
+     */
+    @Override
+    public void onLocationChanged(AMapLocation amapLocation) {
+        if (mListener != null && amapLocation != null) {
+            if (amapLocation != null && amapLocation.getErrorCode() == 0) {
+                mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
+                LatLng mylocation = new LatLng(amapLocation.getLatitude(),
+                        amapLocation.getLongitude());
+                aMap.moveCamera(CameraUpdateFactory.changeLatLng(mylocation));
+                if (!isStop) {
+                    record.addpoint(amapLocation);
+                    mPolyoptions.add(mylocation);
+                    mTracelocationlist.add(RecordUtil.parseTraceLocation(amapLocation));
+                    redrawline();
+                    if (mTracelocationlist.size() > tracesize - 1) {
+                        trace();
+                    }
+                }
+            } else {
+                String errText = "定位失败," + amapLocation.getErrorCode() + ": "
+                        + amapLocation.getErrorInfo();
+                Log.e("AmapErr", errText);
+            }
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private String getcueDate(long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat(
+                "yyyy-MM-dd  HH:mm:ss ");
+        Date curDate = new Date(time);
+        String date = formatter.format(curDate);
+        return date;
+    }
+
+    public void record(View view) {
+        Intent intent = new Intent(RunningActivity.this, RecordActivity.class);
+        startActivity(intent);
+    }
+
+    private void trace() {
+        List<TraceLocation> locationList = new ArrayList<>(mTracelocationlist);
+        LBSTraceClient mTraceClient = null;
+        try {
+            mTraceClient = new LBSTraceClient(getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mTraceClient.queryProcessedTrace(1, locationList, LBSTraceClient.TYPE_AMAP, this);
+        TraceLocation lastlocation = mTracelocationlist.get(mTracelocationlist.size() - 1);
+        mTracelocationlist.clear();
+        mTracelocationlist.add(lastlocation);
+    }
+
+    @Override
+    public void onRequestFailed(int i, String s) {
+        mOverlayList.add(mTraceoverlay);
+        mTraceoverlay = new TraceOverlay(aMap);
+    }
+
+    @Override
+    public void onTraceProcessing(int i, int i1, List<LatLng> list) {
+
+    }
+
+    /**
+     * 轨迹纠偏成功回调。
+     *
+     * @param lineID      纠偏的线路ID
+     * @param linepoints  纠偏结果
+     * @param distance    总距离
+     * @param waitingtime 等待时间
+     */
+    @Override
+    public void onFinished(int lineID, List<LatLng> linepoints, int distance, int waitingtime) {
+        if (lineID == 1) {
+            if (linepoints != null && linepoints.size() > 0) {
+                mTraceoverlay.add(linepoints);
+                mDistance += distance;
+                mTraceoverlay.setDistance(mTraceoverlay.getDistance() + distance);
+                if (mlocMarker == null) {
+                    mlocMarker = aMap.addMarker(new MarkerOptions().position(linepoints.get(linepoints.size() - 1))
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(R.drawable.point))
+                            .title("距离：" + mDistance + "米"));
+                    mlocMarker.showInfoWindow();
+                } else {
+                    mlocMarker.setTitle("距离：" + mDistance + "米");
+                    Toast.makeText(RunningActivity.this, "距离" + mDistance, Toast.LENGTH_SHORT).show();
+                    mlocMarker.setPosition(linepoints.get(linepoints.size() - 1));
+                    mlocMarker.showInfoWindow();
+                }
+            }
+        } else if (lineID == 2) {
+            if (linepoints != null && linepoints.size() > 0) {
+                aMap.addPolyline(new PolylineOptions()
+                        .color(Color.RED)
+                        .width(40).addAll(linepoints));
+            }
+        }
+
+    }
+
+    private String getPathLineString(List<AMapLocation> list) {
+        if (list == null || list.size() == 0) {
+            return "";
+        }
+        StringBuffer pathline = new StringBuffer();
+        for (int i = 0; i < list.size(); i++) {
+            AMapLocation location = list.get(i);
+            String locString = amapLocationToString(location);
+            pathline.append(locString).append(";");
+        }
+        String pathLineString = pathline.toString();
+        pathLineString = pathLineString.substring(0,
+                pathLineString.length() - 1);
+        return pathLineString;
+    }
+
+    private String amapLocationToString(AMapLocation location) {
+        StringBuffer locString = new StringBuffer();
+        locString.append(location.getLatitude()).append(",");
+        locString.append(location.getLongitude()).append(",");
+        locString.append(location.getProvider()).append(",");
+        locString.append(location.getTime()).append(",");
+        locString.append(location.getSpeed()).append(",");
+        locString.append(location.getBearing());
+        return locString.toString();
+    }
+
+    private void initpolyline() {
+        mPolyoptions = new PolylineOptions();
+        mPolyoptions.width(10f);
+        mPolyoptions.color(Color.GRAY);
+        tracePolytion = new PolylineOptions();
+        tracePolytion.width(40);
+        tracePolytion.setCustomTexture(BitmapDescriptorFactory.fromResource(R.drawable.grasp_trace_line));
+    }
+
+    /**
+     * 最后获取总距离
+     *
+     * @return
+     */
+    private int getTotalDistance() {
+        int distance = 0;
+        for (TraceOverlay to : mOverlayList) {
+            distance = distance + to.getDistance();
+        }
+        return distance;
+    }
+
+    /*************************************** 权限检查******************************************************/
+    /**
+     * 弹出隐私政策确认对话框
+     */
     private void privacyCompliance() {
         MapsInitializer.updatePrivacyShow(RunningActivity.this, true, true);
-        /**
-         * 弹出隐私政策确认对话框
-         */
         mDialogLoader.showConfirmDialog(
                 RunningActivity.this, "高德地图温馨提示(隐私合规示例)",
                 "\"亲，感谢您对GoSports一直以来的信任！我们依据最新的监管要求更新了GoSports《隐私权政策》，特向您说明如下\n1.为向您提供交易相关基本功能，我们会收集、使用必要的信息；\n2.基于您的明示授权，我们可能会获取您的位置（为您提供附近的商品、店铺及优惠资讯等）等信息，您有权拒绝或取消授权；\n3.我们会采取业界先进的安全措施保护您的信息安全；\n4.未经您同意，我们不会从第三方处获取、共享或向提供您的信息；\n",
@@ -352,71 +742,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                     }
                 });
     }
-
-    /*************************************** 定位监听******************************************************/
-    /**
-     * 激活定位
-     */
-    @Override
-    public void activate(OnLocationChangedListener onLocationChangedListener) {
-        mListener = onLocationChangedListener;
-        if (mlocationClient == null) {
-            //初始化定位
-            try {
-                mlocationClient = new AMapLocationClient(this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            //初始化定位参数
-            mLocationOption = new AMapLocationClientOption();
-            //设置定位回调监听
-            mlocationClient.setLocationListener(this);
-            //设置为高精度定位模式
-            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-            //设置定位参数
-            mlocationClient.setLocationOption(mLocationOption);
-            // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-            // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-            // 在定位结束后，在合适的生命周期调用onDestroy()方法
-            // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-            mlocationClient.startLocation();//启动定位
-        }
-
-    }
-
-    /**
-     * 停止定位
-     */
-    @Override
-    public void deactivate() {
-        mListener = null;
-        if (mlocationClient != null) {
-            mlocationClient.stopLocation();
-            mlocationClient.onDestroy();
-        }
-        mlocationClient = null;
-    }
-
-
-    /**
-     * 定位回调  在回调方法中调用“mListener.onLocationChanged(amapLocation);”可以在地图上显示系统小蓝点。
-     *
-     * @param aMapLocation
-     */
-    @Override
-    public void onLocationChanged(AMapLocation aMapLocation) {
-        if (mListener != null && aMapLocation != null) {
-            if (aMapLocation != null && aMapLocation.getErrorCode() == 0) {
-                mListener.onLocationChanged(aMapLocation);// 显示系统小蓝点
-
-            } else {
-                String errText = "定位失败," + aMapLocation.getErrorCode() + ": " + aMapLocation.getErrorInfo();
-                Log.e("定位AmapErr", errText);
-            }
-        }
-    }
-
-    /*************************************** 权限检查******************************************************/
 
     /**
      * 需要进行检测的权限数组
@@ -444,7 +769,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
     protected void onResume() {
         try {
             super.onResume();
-
             //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
             mMapView.onResume();
             if (Build.VERSION.SDK_INT >= 23) {
@@ -660,4 +984,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
             e.printStackTrace();
         }
     }
+
+
 }
