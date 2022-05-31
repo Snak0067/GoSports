@@ -7,7 +7,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -15,14 +14,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,6 +35,7 @@ import com.amap.api.maps.model.MyLocationStyle;
 import com.xiaofeng.GoSports.R;
 import com.xiaofeng.GoSports.utils.SettingUtils;
 import com.xiaofeng.GoSports.utils.TimerUtils;
+import com.xiaofeng.GoSports.utils.VoiceUtils;
 import com.xiaofeng.GoSports.utils.XToastUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xui.widget.dialog.strategy.impl.MaterialDialogStrategy;
@@ -77,7 +73,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
     /**
      * 语音播报
      */
-    RunningVoiceUtils voiceUtils;
+    VoiceUtils voiceUtils;
 
     //初始化地图控制器对象
     AMap aMap;
@@ -165,7 +161,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         }
         SettingUtils.setIsAgreeMapPrivacy(true);
         //设置语音
-        voiceUtils = new RunningVoiceUtils(RunningActivity.this);
+        voiceUtils = new VoiceUtils(RunningActivity.this);
     }
 
     public void initListeners() {

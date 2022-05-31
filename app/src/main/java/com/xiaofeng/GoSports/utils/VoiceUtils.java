@@ -1,4 +1,4 @@
-package com.xiaofeng.GoSports.fragment.running;
+package com.xiaofeng.GoSports.utils;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
@@ -12,10 +12,10 @@ import java.util.Locale;
 /**
  * 调用安卓自带语音
  */
-public class RunningVoiceUtils {
+public class VoiceUtils {
     private TextToSpeech textToSpeech = null;//创建自带语音对象
 
-    public RunningVoiceUtils(Context context) {
+    public VoiceUtils(Context context) {
         //实例化自带语音对象
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override

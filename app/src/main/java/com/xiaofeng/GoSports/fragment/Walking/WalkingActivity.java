@@ -33,6 +33,7 @@ import com.amap.api.trace.TraceListener;
 import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceOverlay;
 import com.xiaofeng.GoSports.R;
+import com.xiaofeng.GoSports.utils.VoiceUtils;
 import com.xiaofeng.GoSports.utils.path.DbAdapter;
 import com.xiaofeng.GoSports.utils.path.PathRecord;
 import com.xiaofeng.GoSports.utils.path.RecordUtil;
@@ -68,11 +69,12 @@ public class WalkingActivity extends Activity implements LocationSource,
     private TraceOverlay mTraceoverlay;
     private TextView mResultShow;
     private Marker mlocMarker;
+    private VoiceUtils voiceUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_walking);
+        setContentView(R.layout.activity_path_main);
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);// 此方法必须重写
         init();
@@ -83,6 +85,7 @@ public class WalkingActivity extends Activity implements LocationSource,
      * 初始化AMap对象
      */
     private void init() {
+        voiceUtils = new VoiceUtils(WalkingActivity.this);
         if (mAMap == null) {
             mAMap = mMapView.getMap();
             setUpMap();
@@ -96,11 +99,13 @@ public class WalkingActivity extends Activity implements LocationSource,
                     if (record != null) {
                         record = null;
                     }
+                    voiceUtils.speakWords("开始走路，感受美好时光吧！");
                     record = new PathRecord();
                     mStartTime = System.currentTimeMillis();
                     record.setDate(getcueDate(mStartTime));
                     mResultShow.setText("总距离");
                 } else {
+                    voiceUtils.speakWords("运动结束，拉伸一下吧！");
                     mEndTime = System.currentTimeMillis();
                     mOverlayList.add(mTraceoverlay);
                     DecimalFormat decimalFormat = new DecimalFormat("0.0");

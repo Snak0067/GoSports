@@ -68,6 +68,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".fragment.running.RunningActivity" />
+        <activity android:name=".fragment.Walking.WalkingActivity" />
+        <activity android:name=".fragment.Walking.RecordActivity"/>
+        <activity android:name=".fragment.Walking.RecordShowActivity"/>
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisteredActivity" />
         <activity
