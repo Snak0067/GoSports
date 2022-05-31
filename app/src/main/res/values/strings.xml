@@ -92,6 +92,7 @@
     <string name="running_tip_take_time">用时</string>
     <string name="running_heart_rate">心率</string>
     <string name="running_speed">配速</string>
-    <string name="running_text_go">GO</string>
-    <string name="running_text_stop">stop</string>
+    <string name="running_text_go">开始</string>
+    <string name="running_text_stop">结束</string>
+    <string name="running_text_pause">暂停</string>
 </resources>

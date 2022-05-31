@@ -12,11 +12,17 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,17 +39,51 @@ import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.xiaofeng.GoSports.R;
 import com.xiaofeng.GoSports.utils.SettingUtils;
+import com.xiaofeng.GoSports.utils.TimerUtils;
+import com.xiaofeng.GoSports.utils.XToastUtils;
+import com.xuexiang.xui.widget.dialog.DialogLoader;
+import com.xuexiang.xui.widget.dialog.strategy.impl.MaterialDialogStrategy;
+import com.xuexiang.xui.widget.toast.XToast;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RunningActivity extends AppCompatActivity implements LocationSource, AMapLocationListener {
     MapView mMapView = null;
+    /**
+     * 程序调试信息
+     */
+    private static final String TAG = "RunningActivity";
+    /**
+     * 设置对话框策略
+     */
+    private DialogLoader mDialogLoader;
 
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private Handler mHandler = null;
+    private static int count = 0;
+    /**
+     * 当前计时器的状态
+     */
+    private boolean isPause = false;
+    private boolean isStop = true;
+    private static int delay = 1000;  //1s
+    private static int period = 1000;  //1s
+    private static final int UPDATE_TEXTVIEW = 0;
+    /**
+     * 语音播报
+     */
+    RunningVoiceUtils voiceUtils;
 
     //初始化地图控制器对象
     AMap aMap;
+    //初始化布局控件
+    Button btn_start, btn_stop, btn_pause;
+    TextView TextView_speed, TextView_heartRate, TextView_steps, TextView_time, textView_distance;
 
     //定位需要的数据
     LocationSource.OnLocationChangedListener mListener;
@@ -78,10 +118,23 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         mMapView = (MapView) findViewById(R.id.map);
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
-        if (aMap == null) {
-            aMap = mMapView.getMap();
-
-        }
+        if (aMap == null) aMap = mMapView.getMap();
+        /**
+         * 设置控件
+         */
+        textView_distance = (TextView) findViewById(R.id.textView_distance);
+        TextView_time = (TextView) findViewById(R.id.TextView_time);
+        TextView_steps = (TextView) findViewById(R.id.TextView_steps);
+        TextView_heartRate = (TextView) findViewById(R.id.TextView_heartRate);
+        TextView_speed = (TextView) findViewById(R.id.TextView_speed);
+        btn_start = (Button) findViewById(R.id.btn_running_start);
+        btn_stop = (Button) findViewById(R.id.btn_running_stop);
+        btn_pause = (Button) findViewById(R.id.btn_running_pause);
+        /**
+         * 设置监听启动和停止
+         */
+        initListeners();
+        mDialogLoader = DialogLoader.getInstance().setIDialogStrategy(new MaterialDialogStrategy());
         //设置地图的放缩级别
         aMap.moveCamera(CameraUpdateFactory.zoomTo(19));
         // 设置定位监听
@@ -98,10 +151,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
         aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）默认执行此种模式。
-
-
         myLocationStyle.showMyLocation(true);
-
         aMap.setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
@@ -114,8 +164,166 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
             privacyCompliance();
         }
         SettingUtils.setIsAgreeMapPrivacy(true);
+        //设置语音
+        voiceUtils = new RunningVoiceUtils(RunningActivity.this);
+    }
+
+    public void initListeners() {
+        /**
+         * 对开始跑步进行监听
+         */
+        btn_start.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                Log.v(TAG, "用户点击开始运动");
+
+                if (isStop) {
+                    isStop = !isStop;
+                    voiceUtils.speakWords("开始跑步！动起来！");
+                    startTimer();
+                } else {
+                    XToastUtils.info("正在跑步中....");
+                }
+            }
+        });
+        /**
+         * 对暂停跑步进行监听
+         */
+        btn_pause.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                if (isPause) {
+                    Log.i(TAG, "Resume");
+                    btn_pause.setText("暂停");
+                    XToastUtils.info("继续跑步....");
+                    voiceUtils.speakWords("继续跑步");
+                } else {
+                    Log.i(TAG, "Pause");
+                    btn_pause.setText("继续");
+                    XToastUtils.info("暂停跑步....");
+                    voiceUtils.speakWords("暂停跑步");
+                }
+                isPause = !isPause;
+            }
+        });
+        /**
+         * handler
+         */
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case UPDATE_TEXTVIEW:
+                        updateTextView();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+
+        /**
+         * 对结束跑步进行监听
+         */
+        btn_stop.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                isPause = !isPause;
+                /**
+                 * 弹出对话框
+                 */
+                mDialogLoader.showConfirmDialog(
+                        RunningActivity.this, "结束运动提示 \n 确认结束运动吗", "确认",
+                        /**
+                         * 点击了确认，运动结束
+                         */
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                isPause = false;
+                                isStop = true;
+                                stopTimer();
+                                TextView_time.setText(TimerUtils.timeConversion(0));
+                                XToast.normal(RunningActivity.this, "运动结束").show();
+                                voiceUtils.speakWords("运动已结束");
+                                dialogInterface.dismiss();
+                            }
+                        }, "取消",
+                        /**
+                         * 点击了取消，运动继续
+                         */
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                isPause = !isPause;
+                                XToast.normal(RunningActivity.this, "运动继续").show();
+                                voiceUtils.speakWords("运动继续");
+                                dialogInterface.dismiss();
+                            }
+                        });
+            }
+        });
+
 
     }
+
+    /**
+     * 计时器开始计时
+     */
+    private void startTimer() {
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "count: " + String.valueOf(count));
+                    sendMessage(UPDATE_TEXTVIEW);
+                    do {
+                        try {
+                            Log.i(TAG, "sleep(1000)...");
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                    } while (isPause);
+                    count++;
+                }
+            };
+        }
+
+        if (mTimer != null && mTimerTask != null)
+            mTimer.schedule(mTimerTask, delay, period);
+
+    }
+
+    /**
+     * 更新时间
+     */
+    private void updateTextView() {
+        TextView_time.setText(TimerUtils.timeConversion(count));
+    }
+
+    /**
+     * 停止计时器
+     */
+    private void stopTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+    }
+
+    public void sendMessage(int id) {
+        if (mHandler != null) {
+            Message message = Message.obtain(mHandler, id);
+            mHandler.sendMessage(message);
+        }
+    }
+
 
     private void setUp(AMap amap) {
         UiSettings uiSettings = amap.getUiSettings();
@@ -126,16 +334,27 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
 
     private void privacyCompliance() {
         MapsInitializer.updatePrivacyShow(RunningActivity.this, true, true);
-        SpannableStringBuilder spannable = new SpannableStringBuilder("\"亲，感谢您对GoSports一直以来的信任！我们依据最新的监管要求更新了GoSports《隐私权政策》，特向您说明如下\n1.为向您提供交易相关基本功能，我们会收集、使用必要的信息；\n2.基于您的明示授权，我们可能会获取您的位置（为您提供附近的商品、店铺及优惠资讯等）等信息，您有权拒绝或取消授权；\n3.我们会采取业界先进的安全措施保护您的信息安全；\n4.未经您同意，我们不会从第三方处获取、共享或向提供您的信息；\n");
-        spannable.setSpan(new ForegroundColorSpan(Color.BLUE), 35, 42, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        AlertDialog privaryDialog = new AlertDialog.Builder(this)
-                .setTitle("高德地图温馨提示(隐私合规示例)")
-                .setMessage(spannable)
-                .setPositiveButton("同意", (dialogInterface, i) -> MapsInitializer.updatePrivacyAgree(RunningActivity.this, true))
-                .setNegativeButton("不同意", (dialogInterface, i) -> MapsInitializer.updatePrivacyAgree(RunningActivity.this, false))
-                .show();
-
+        /**
+         * 弹出隐私政策确认对话框
+         */
+        mDialogLoader.showConfirmDialog(
+                RunningActivity.this, "高德地图温馨提示(隐私合规示例)",
+                "\"亲，感谢您对GoSports一直以来的信任！我们依据最新的监管要求更新了GoSports《隐私权政策》，特向您说明如下\n1.为向您提供交易相关基本功能，我们会收集、使用必要的信息；\n2.基于您的明示授权，我们可能会获取您的位置（为您提供附近的商品、店铺及优惠资讯等）等信息，您有权拒绝或取消授权；\n3.我们会采取业界先进的安全措施保护您的信息安全；\n4.未经您同意，我们不会从第三方处获取、共享或向提供您的信息；\n",
+                "同意",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MapsInitializer.updatePrivacyAgree(RunningActivity.this, true);
+                        dialogInterface.dismiss();
+                    }
+                },
+                "不同意", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MapsInitializer.updatePrivacyAgree(RunningActivity.this, false);
+                        dialogInterface.dismiss();
+                    }
+                });
     }
 
     /*************************************** 定位监听******************************************************/
@@ -375,7 +594,8 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
     }
 
     @SuppressLint("MissingSuperCall")
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] paramArrayOfInt) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] paramArrayOfInt) {
         try {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (requestCode == PERMISSON_REQUESTCODE) {

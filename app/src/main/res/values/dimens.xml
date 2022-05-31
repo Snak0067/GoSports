@@ -28,4 +28,7 @@
     <dimen name="config_padding_24dp">24dp</dimen>
     <dimen name="config_padding_30dp">30dp</dimen>
 
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
 </resources>

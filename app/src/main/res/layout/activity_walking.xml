@@ -8,9 +8,11 @@
     tools:context=".fragment.running.RunningActivity">
 
     <com.amap.api.maps.MapView
-        android:id="@+id/map"
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="414dp" />
+        android:layout_height="403dp">
+
+    </com.amap.api.maps.MapView>
 
     <LinearLayout
         android:id="@+id/running_function_board"
