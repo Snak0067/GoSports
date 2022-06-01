@@ -77,7 +77,7 @@
                 app:met_errorMessage="@string/tip_verify_code_error"
                 app:met_floatingLabel="normal"
                 app:met_floatingLabelText="@string/lab_verify_code"
-                app:met_maxCharacters="4"
+                app:met_maxCharacters="6"
                 app:met_regexp="@string/regex_verify_code" />
 
             <com.xuexiang.xui.widget.button.roundbutton.RoundButton

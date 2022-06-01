@@ -55,6 +55,7 @@ import com.xiaofeng.GoSports.utils.XToastUtils;
 import com.xiaofeng.GoSports.utils.path.DbAdapter;
 import com.xiaofeng.GoSports.utils.path.PathRecord;
 import com.xiaofeng.GoSports.utils.path.RecordUtil;
+import com.xiaofeng.GoSports.utils.sms.SendSmsUtil;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xui.widget.dialog.strategy.impl.MaterialDialogStrategy;
 import com.xuexiang.xui.widget.toast.XToast;
@@ -98,7 +99,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
      * 语音播报
      */
     VoiceUtils voiceUtils;
-
     //初始化地图控制器对象
     AMap aMap;
     //初始化布局控件
@@ -214,6 +214,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         //设置语音
         voiceUtils = new VoiceUtils(RunningActivity.this);
         mTraceoverlay = new TraceOverlay(aMap);
+
     }
 
     public void initListeners() {
@@ -389,7 +390,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
      */
     private void updateSteps() {
         steps += (int) (Math.random() * 5);
-        TextView_steps.setText(steps);
+        TextView_steps.setText(String.valueOf(steps));
     }
 
     /**
@@ -405,7 +406,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
      */
     private void updateHeartRates() {
         int heartRate = (int) (Math.random() * 40) + 60;
-        TextView_heartRate.setText(heartRate);
+        TextView_heartRate.setText(String.valueOf(heartRate));
     }
 
     /**

@@ -9,18 +9,19 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.amap.api.services.core.ServiceSettings;
 import com.xiaofeng.GoSports.LoginActivity;
-import com.xiaofeng.GoSports.core.BaseFragment;
-import com.xiaofeng.GoSports.utils.Utils;
 import com.xiaofeng.GoSports.R;
+import com.xiaofeng.GoSports.activity.LoginActivityByPhone;
 import com.xiaofeng.GoSports.activity.MainActivity;
+import com.xiaofeng.GoSports.core.BaseFragment;
 import com.xiaofeng.GoSports.databinding.FragmentPhoneLoginBinding;
 import com.xiaofeng.GoSports.utils.RandomUtils;
 import com.xiaofeng.GoSports.utils.SettingUtils;
 import com.xiaofeng.GoSports.utils.TokenUtils;
+import com.xiaofeng.GoSports.utils.Utils;
 import com.xiaofeng.GoSports.utils.XToastUtils;
 import com.xiaofeng.GoSports.utils.sdkinit.UMengInit;
+import com.xiaofeng.GoSports.utils.sms.SendSmsUtil;
 import com.xuexiang.xaop.annotation.SingleClick;
 import com.xuexiang.xpage.annotation.Page;
 import com.xuexiang.xpage.enums.CoreAnim;
@@ -39,7 +40,10 @@ import com.xuexiang.xutil.app.ActivityUtils;
  */
 @Page(anim = CoreAnim.none)
 public class LoginFragment extends BaseFragment<FragmentPhoneLoginBinding> implements View.OnClickListener {
-
+    /**
+     * SMS发送短信Util类
+     */
+    private SendSmsUtil smsUtil;
     private View mJumpView;
     /**
      * 倒计时帮助类->验证码60s倒计时
@@ -71,6 +75,9 @@ public class LoginFragment extends BaseFragment<FragmentPhoneLoginBinding> imple
 
     @Override
     protected void initViews() {
+        //初始化短信smsUtil
+        smsUtil = new SendSmsUtil();
+
         mCountDownHelper = new CountDownButtonHelper(binding.btnGetVerifyCode, 60);
         //隐私政策弹窗
         if (!SettingUtils.isAgreePrivacy()) {
@@ -146,8 +153,18 @@ public class LoginFragment extends BaseFragment<FragmentPhoneLoginBinding> imple
      * 获取验证码
      */
     private void getVerifyCode(String phoneNumber) {
-        // TODO: 2020/8/29 这里只是界面演示而已
-        XToastUtils.warning("只是演示，验证码请随便输");
+        /**
+         * Runnable做HTTP请求
+         */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                smsUtil.sendSms(getContext(), phoneNumber);
+                smsUtil.pullSmsSendStatus();
+            }
+        }).start();
+
+//        XToastUtils.warning("只是演示，验证码请随便输");
         mCountDownHelper.start();
     }
 
@@ -159,7 +176,12 @@ public class LoginFragment extends BaseFragment<FragmentPhoneLoginBinding> imple
      */
     private void loginByVerifyCode(String phoneNumber, String verifyCode) {
         // TODO: 2020/8/29 这里只是界面演示而已
-        onLoginSuccess();
+        if (smsUtil.verifySmsCode(getContext(), phoneNumber, verifyCode)) {
+            onLoginSuccess();
+        } else {
+            XToastUtils.info("登陆失败，请确认您的验证码");
+        }
+
     }
 
     /**

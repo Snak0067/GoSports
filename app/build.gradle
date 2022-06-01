@@ -9,7 +9,7 @@ android {
     compileSdkVersion build_versions.target_sdk
 
     defaultConfig {
-        applicationId "com.xuexiang.templateproject"
+        applicationId "com.xiaofeng.GoSports"
         minSdkVersion 17
         targetSdkVersion build_versions.target_sdk
         versionCode 1
@@ -20,11 +20,11 @@ android {
         vectorDrawables.useSupportLibrary = true
         ndk {
             //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
-            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86","x86_64"
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [ moduleName : project.getName() ]
+                arguments = [moduleName: project.getName()]
             }
         }
     }
@@ -113,7 +113,7 @@ dependencies {
     implementation 'me.jessyan:autosize:1.2.1'
     //umeng统计
     implementation 'com.umeng.umsdk:common:9.3.8'
-    implementation  'com.umeng.umsdk:asms:1.2.1'
+    implementation 'com.umeng.umsdk:asms:1.2.1'
 
     //预加载占位控件
     implementation 'me.samlss:broccoli:1.0.0'
@@ -134,6 +134,19 @@ dependencies {
     implementation 'com.amap.api:location:latest.integration'
     //搜索功能
     implementation 'com.amap.api:search:latest.integration'
+    // https://mvnrepository.com/artifact/com.tencentcloudapi/tencentcloud-sdk-java
+    implementation 'com.tencentcloudapi:tencentcloud-sdk-java:4.0.11'
+    // https://mvnrepository.com/artifact/cn.hutool/hutool-all
+    implementation 'cn.hutool:hutool-all:5.7.20'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    // https://mvnrepository.com/artifact/xerces/xercesImpl
+    implementation 'xerces:xercesImpl:2.12.2'
+
+
+    implementation 'com.orhanobut:logger:1.15'
+
+
 }
 //自动添加X-Library依赖
 apply from: 'x-library.gradle'
