@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!--声明后台定位权限-->
@@ -69,9 +70,10 @@
         </activity>
         <activity android:name=".fragment.running.RunningActivity" />
         <activity android:name=".fragment.Walking.WalkingActivity" />
-        <activity android:name=".fragment.Walking.RecordActivity"/>
-        <activity android:name=".fragment.Walking.RecordShowActivity"/>
-        <activity android:name=".fragment.pushUp.PushUpActivity"/>
+        <activity android:name=".fragment.Walking.RecordActivity" />
+        <activity android:name=".fragment.Walking.RecordShowActivity" />
+        <activity android:name=".fragment.skipping.SkippingActivity" />
+        <activity android:name=".fragment.pushUp.PushUpActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisteredActivity" />
         <activity

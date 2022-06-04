@@ -82,8 +82,10 @@
     <string name="tip_ignore_message">以后不再提示此类信息</string>
     <string name="tip_title">你知道吗？</string>
 
-
+    <!--    运动相关    -->
     <string name="sports_start_sports">开始</string>
+    <string name="sports_energy_cost">消耗能量</string>
+
     <!--    跑步相关     -->
     <string name="running_start">开始跑步</string>
     <string name="running_distance_gongli">公里</string>
@@ -100,5 +102,15 @@
 
     <!--    俯卧撑相关    -->
     <string name="push_up_start">俯卧撑开始</string>
+    <string name="push_up_title">俯卧撑训练</string>
+    <string name="push_up_tip_title">永远年轻，永远热烈盈眶</string>
+    <string name="push_up_tip_subtitle">—— 杰克·凯鲁亚克</string>
+    <string name="push_up_big_button_title">燃起来</string>
+    <!--     跳绳相关      -->
+    <string name="skipping_start">跳绳开始</string>
+    <string name="skipping_title">跳绳训练</string>
+    <string name="skipping_tip_title">从锻炼角度看，躺着不如坐着，坐着不如站着，站着不如走着</string>
+    <string name="skipping_tip_subtitle">—— 法国·卢梭</string>
+    <string name="skipping_big_button_title">开始跳</string>
 
 </resources>

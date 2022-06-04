@@ -66,7 +66,7 @@ public class RegisteredActivity extends AppCompatActivity implements View.OnClic
                     //判断两次密码是否一致
                     if (password1.equals(password2)) {
                         //将用户名和密码加入到数据库中
-                        mDBOpenHelper.add(username, password2, email, phonenum);
+                        mDBOpenHelper.addUser(username, password2, email, phonenum);
                         Intent intent1 = new Intent(RegisteredActivity.this, LoginActivity.class);
                         startActivity(intent1);
                         finish();

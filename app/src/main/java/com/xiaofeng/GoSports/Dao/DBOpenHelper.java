@@ -41,7 +41,15 @@ public class DBOpenHelper extends SQLiteOpenHelper {
             "INSERT INTO user VALUES (1,'admin',123,'admin@163.com',17858407426)",
             "INSERT INTO user VALUES (2,'mxf',123,'zhangsan@163.com',13968083789)",
             "INSERT INTO user VALUES (3,'maxiaofeng',123,'lisi@163.com',13968083456)",
-            "INSERT INTO user VALUES (4,'admin','admin','wangwu@163.com',1561565454)"
+            "INSERT INTO user VALUES (4,'admin','admin','wangwu@163.com',1561565454)",
+            "CREATE TABLE IF NOT EXISTS pushUpTable(" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "beginTime varchar," +
+                    "endTime varchar," +
+                    "energyCost varchar," +
+                    "pushUpCount varchar," +
+                    "costTime varchar)"
+
     };
 
     /**
@@ -78,7 +86,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
      * update()
      * getAllData()
      */
-    public void add(String name, String password, String email, String phonenum) {
+    public void addUser(String name, String password, String email, String phonenum) {
         db.execSQL("INSERT INTO user (name,password,email,phonenum) VALUES(?,?,?,?)", new Object[]{name, password, email, phonenum});
     }
 
@@ -88,6 +96,21 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
     public void update(String password) {
         db.execSQL("UPDATE user SET password = ?", new Object[]{password});
+    }
+
+    /**
+     * 增加俯卧撑锻炼记录
+     *
+     * @param beginTime
+     * @param endTime
+     * @param energyCost
+     * @param pushUpCount
+     * @param costTime
+     */
+    public void addPushUpRecord(String beginTime, String endTime,
+                                String energyCost, String pushUpCount, String costTime) {
+        db.execSQL("INSERT INTO pushUpTable (beginTime,endTime,energyCost,pushUpCount,costTime) VALUES(?,?,?,?,?)",
+                new Object[]{beginTime, endTime, energyCost, pushUpCount, costTime});
     }
 
     /**

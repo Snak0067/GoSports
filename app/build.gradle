@@ -143,8 +143,8 @@ dependencies {
     // https://mvnrepository.com/artifact/xerces/xercesImpl
     implementation 'xerces:xercesImpl:2.12.2'
 
-
     implementation 'com.orhanobut:logger:1.15'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.6'
 
 
 }

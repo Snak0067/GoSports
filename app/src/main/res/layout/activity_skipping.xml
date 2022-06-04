@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.pushUp.PushUpActivity">
+    tools:context=".fragment.skipping.SkippingActivity">
 
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="62dp"
         android:gravity="center"
-        android:text="@string/push_up_title"
+        android:text="@string/skipping_title"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="24sp"
@@ -24,18 +24,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:paddingTop="10dp"
-        android:src="@drawable/push_up" />
+        android:paddingTop="5dp"
+        android:src="@drawable/skipping" />
 
 
     <TextView
-        android:id="@+id/push_up_tip_title"
+        android:id="@+id/skipping_title"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:paddingLeft="@dimen/config_margin_30dp"
-        android:text="@string/push_up_tip_title"
+        android:text="@string/skipping_tip_title"
         android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -44,12 +44,13 @@
     </TextView>
 
     <TextView
-        android:id="@+id/push_up_tip_subtitle"
+        android:id="@+id/skipping_tip_subtitle"
         android:layout_width="match_parent"
         android:layout_height="30dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:paddingLeft="@dimen/config_margin_30dp"
-        android:text="@string/push_up_tip_subtitle"
+        android:text="@string/skipping_tip_subtitle"
         android:textAlignment="textStart"
         android:textColor="@color/app_color_gray"
         android:textStyle="bold">
@@ -59,12 +60,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal"
         android:weightSum="100">
 
         <TextView
-            android:id="@+id/TextView_pushUp_time"
+            android:id="@+id/TextView_skipping_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
@@ -75,7 +76,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/TextView_pushUp_energy"
+            android:id="@+id/TextView_skipping_energy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
@@ -95,7 +96,7 @@
         android:weightSum="100">
 
         <TextView
-            android:id="@+id/TextView_pushUp_tip_time"
+            android:id="@+id/TextView_skipping_tip_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
@@ -104,7 +105,7 @@
             android:textSize="10sp" />
 
         <TextView
-            android:id="@+id/TextView_pushUp_tip_energy"
+            android:id="@+id/TextView_skipping_tip_energy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
@@ -123,7 +124,7 @@
 
 
         <Button
-            android:id="@+id/btn_pushUp_start"
+            android:id="@+id/btn_skipping_start"
             android:layout_width="62dp"
             android:layout_height="62dp"
             android:background="@drawable/start_sports_shape_circle"
@@ -131,19 +132,19 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/btn_pushUp_count"
+            android:id="@+id/btn_skipping_count"
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_marginStart="16dp"
             android:background="@drawable/pause_sports_shape_circle"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="@string/push_up_big_button_title"
+            android:text="@string/skipping_big_button_title"
             android:textSize="34sp"
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btn_pushUp_end"
+            android:id="@+id/btn_skipping_end"
             android:layout_width="62dp"
             android:layout_height="62dp"
             android:layout_marginStart="16dp"
