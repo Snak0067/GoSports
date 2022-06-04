@@ -134,9 +134,21 @@ public class SkippingActivity extends Activity implements SensorEventListener {
                 float angleY = (float) Math.toDegrees(mAngle[1]);
                 // z轴的旋转角度，手机平放桌上，然后水平旋转
                 float angleZ = (float) Math.toDegrees(mAngle[2]);
-                String desc = String.format("陀螺仪检测到当前\nx轴方向的转动角度为%f\ny轴方向的转动角度为%f\nz轴方向的转动角度为%f",
-                        angleX, angleY, angleZ);
-                Log.v(TAG, desc);
+                int coll = 18;   //作为一个标准值
+//            判断在什么情况下要切换图片
+                if (Math.abs(angleZ) > coll) {
+                    /**
+                     * 300:摇晃了300毫秒之后，开始震动
+                     * 500：震动持续的时间，震动持续了500毫秒。
+                     * */
+                    long[] pattern = {300, 300};
+                    vibrator.vibrate(pattern, -1);
+                    count++;
+                    String desc = String.format("陀螺仪检测到当前\nx轴方向的转动角度为%f\ny轴方向的转动角度为%f\nz轴方向的转动角度为%f",
+                            angleX, angleY, angleZ);
+                    Log.d(TAG, desc);
+                    Log.d(TAG, "发生摇晃：" + count);
+                }
             }
             mTimestamp = event.timestamp;
         }
