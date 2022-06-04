@@ -82,6 +82,8 @@
     <string name="tip_ignore_message">以后不再提示此类信息</string>
     <string name="tip_title">你知道吗？</string>
 
+
+    <string name="sports_start_sports">开始</string>
     <!--    跑步相关     -->
     <string name="running_start">开始跑步</string>
     <string name="running_distance_gongli">公里</string>
@@ -95,4 +97,8 @@
     <string name="running_text_go">开始</string>
     <string name="running_text_stop">结束</string>
     <string name="running_text_pause">暂停</string>
+
+    <!--    俯卧撑相关    -->
+    <string name="push_up_start">俯卧撑开始</string>
+
 </resources>

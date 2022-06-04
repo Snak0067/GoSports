@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.pushUp.PushUpActivity">
+
+    <TextView
+        android:id="@+id/textview_push_up_count"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="@string/push_up_start"
+        android:textAlignment="center"
+        android:textSize="34sp" />
+
+    <Button
+        android:id="@+id/btn_pushUp_start"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="36dp"
+        android:background="@drawable/pause_sports_shape_circle"
+        android:gravity="center"
+        android:text="@string/running_text_pause"
+        android:textSize="18sp" />
+</LinearLayout>

@@ -169,7 +169,7 @@
                 android:layout_width="62dp"
                 android:layout_height="62dp"
                 android:background="@drawable/start_sports_shape_circle"
-                android:text="@string/running_text_go"
+                android:text="@string/sports_start_sports"
                 android:textSize="18sp" />
 
             <Button
