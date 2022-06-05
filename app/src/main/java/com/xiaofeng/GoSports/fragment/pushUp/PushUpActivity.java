@@ -2,7 +2,6 @@ package com.xiaofeng.GoSports.fragment.pushUp;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,14 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.amap.api.trace.LBSTraceClient;
 import com.xiaofeng.GoSports.Dao.DBOpenHelper;
 import com.xiaofeng.GoSports.R;
-import com.xiaofeng.GoSports.fragment.running.RunningActivity;
 import com.xiaofeng.GoSports.utils.TimerUtils;
 import com.xiaofeng.GoSports.utils.VoiceUtils;
 import com.xiaofeng.GoSports.utils.XToastUtils;
-import com.xiaofeng.GoSports.utils.path.RecordUtil;
 import com.xuexiang.xpage.annotation.Page;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xui.widget.dialog.strategy.impl.MaterialDialogStrategy;

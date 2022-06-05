@@ -49,10 +49,11 @@ public class SkippingActivity extends Activity implements SensorEventListener {
      * 跳绳数据相关
      */
     private DialogLoader mDialogLoader;
-    private int count = 0;
     private float mTimestamp; // 记录上次的时间戳
     private float mAngle[] = new float[3]; // 记录xyz三个方向上的旋转角度
     private static final float NS2S = 1.0f / 1000000000.0f; // 将纳秒转化为秒
+    private int tripleToOne = 0;
+    int count_skipping = 0;
     /**
      * 震动器相关
      */
@@ -84,6 +85,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
     private static int delay = 1000;  //1s
     private static int period = 1000;  //1s
     private static final int UPDATE_TEXTVIEW = 0;
+    private static int count_time = 0;
     /**
      * 工具类
      */
@@ -99,8 +101,8 @@ public class SkippingActivity extends Activity implements SensorEventListener {
     }
 
     private void init() {
-        TextView_skipping_time = (TextView) findViewById(R.id.TextView_skipping_tip_time);
-        TextView_skipping_energy = (TextView) findViewById(R.id.TextView_skipping_tip_energy);
+        TextView_skipping_time = (TextView) findViewById(R.id.TextView_skipping_time);
+        TextView_skipping_energy = (TextView) findViewById(R.id.TextView_skipping_energy);
         btn_skipping_start = (Button) findViewById(R.id.btn_skipping_start);
         btn_skipping_count = (Button) findViewById(R.id.btn_skipping_count);
         btn_skipping_end = (Button) findViewById(R.id.btn_skipping_end);
@@ -141,7 +143,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) { // 陀螺仪角度变更事件
-            if (mTimestamp != 0) {
+            if (mTimestamp != 0 && !isPause && !isStop) {
                 final float dT = (event.timestamp - mTimestamp) * NS2S;
                 mAngle[0] += event.values[0] * dT;
                 mAngle[1] += event.values[1] * dT;
@@ -152,22 +154,29 @@ public class SkippingActivity extends Activity implements SensorEventListener {
                 angleY_new = (float) Math.toDegrees(mAngle[1]);
                 // z轴的旋转角度，手机平放桌上，然后水平旋转
                 angleZ_new = (float) Math.toDegrees(mAngle[2]);
-                int coll = 18;   //作为一个标准值
+                int coll = 30;   //作为一个标准值
                 // 判断在什么情况下要计数
                 if (Math.abs(angleX_new - angleX) > coll
                         || Math.abs(angleY_new - angleY) > coll
                         || Math.abs(angleZ_new - angleZ) > coll) {
-                    /**
-                     * 300:摇晃了300毫秒之后，开始震动
-                     * 500：震动持续的时间，震动持续了500毫秒。
-                     * */
-                    long[] pattern = {300, 300};
-                    vibrator.vibrate(pattern, -1);
-                    count++;
-                    String desc = String.format("陀螺仪检测到当前\nx轴方向的转动角度为%f\ny轴方向的转动角度为%f\nz轴方向的转动角度为%f",
-                            angleX, angleY, angleZ);
-                    Log.d(TAG, desc);
-                    Log.d(TAG, "发生摇晃：" + count);
+                    tripleToOne++;
+                    //进行上下偏移的两次计数转换为1次计数
+                    if (tripleToOne % 3 == 0) {
+                        /**
+                         * 300:摇晃了300毫秒之后，开始震动
+                         * 500：震动持续的时间，震动持续了500毫秒。
+                         * */
+                        long[] pattern = {300, 300};
+                        vibrator.vibrate(pattern, -1);
+                        count_skipping++;
+                        btn_skipping_count.setText(String.valueOf(count_skipping));
+                        updateEnergyCost();
+                        String desc = String.format("陀螺仪检测到当前\nx轴方向的转动角度为%f\ny轴方向的转动角度为%f\nz轴方向的转动角度为%f",
+                                angleX, angleY, angleZ);
+                        Log.d(TAG, desc);
+                        Log.d(TAG, "发生摇晃：" + count_skipping);
+                        voiceUtils.speakWords(String.valueOf(count_skipping));
+                    }
                 }
                 angleX = angleX_new;
                 angleY = angleY_new;
@@ -269,13 +278,14 @@ public class SkippingActivity extends Activity implements SensorEventListener {
                                     dbOpenHelper.addSkippingRecord(String.valueOf(beginTime_system),
                                             String.valueOf(endTime_system),
                                             String.valueOf(energyCost),
-                                            String.valueOf(count),
+                                            String.valueOf(count_skipping),
                                             String.valueOf(durationTime_system));
                                     btn_skipping_count.setText("燃起来");
                                     TextView_skipping_energy.setText("---");
                                     TextView_skipping_time.setText(TimerUtils.timeConversion(0));
                                     XToast.normal(SkippingActivity.this, "运动结束").show();
-                                    voiceUtils.speakWords("真棒!跳了" + count + "下，消耗了" + energyCost + "卡的热量。");
+                                    voiceUtils.speakWords("真棒!跳了" + count_skipping + "下，消耗了" + energyCost + "卡的热量。");
+                                    reInitData();
                                     dialogInterface.dismiss();
                                 }
                             }, "取消",
@@ -308,7 +318,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
             mTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    Log.i(TAG, "count: " + String.valueOf(count));
+                    Log.i(TAG, "计时: " + String.valueOf(count_time));
                     sendMessage(UPDATE_TEXTVIEW);
                     do {
                         try {
@@ -317,7 +327,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
                         } catch (InterruptedException e) {
                         }
                     } while (isPause);
-                    count++;
+                    count_time++;
                 }
             };
         }
@@ -337,7 +347,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
             mTimerTask.cancel();
             mTimerTask = null;
         }
-        count = 0;
+        count_time = 0;
     }
 
     /**
@@ -356,15 +366,31 @@ public class SkippingActivity extends Activity implements SensorEventListener {
      * 更新时间
      */
     private void updateTime() {
-        TextView_skipping_time.setText(TimerUtils.timeConversion(count));
+        TextView_skipping_time.setText(TimerUtils.timeConversion(count_time));
     }
 
     /**
      * 更新消耗卡路里
      */
     private void updateEnergyCost() {
-        energyCost += (int) (Math.random() * 5);
+        energyCost += (int) (Math.random() * 3);
         TextView_skipping_energy.setText(energyCost + "卡");
+    }
+
+    private void reInitData() {
+        count_time = 0;
+        energyCost = 0;
+        beginTime_system = 0;
+        endTime_system = 0;
+        durationTime_system = 0;
+        isPause = false;
+        isStop = true;
+        angleX = 0;
+        angleY = 0;
+        angleZ = 0;
+        angleX_new = 0;
+        angleY_new = 0;
+        angleZ_new = 0;
     }
 
 }

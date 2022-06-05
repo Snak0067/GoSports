@@ -3,6 +3,7 @@ package com.xiaofeng.GoSports.fragment.running;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,13 +16,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -47,7 +48,6 @@ import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceOverlay;
 import com.xiaofeng.GoSports.R;
 import com.xiaofeng.GoSports.fragment.Walking.RecordActivity;
-import com.xiaofeng.GoSports.fragment.Walking.WalkingActivity;
 import com.xiaofeng.GoSports.utils.SettingUtils;
 import com.xiaofeng.GoSports.utils.TimerUtils;
 import com.xiaofeng.GoSports.utils.VoiceUtils;
@@ -55,7 +55,7 @@ import com.xiaofeng.GoSports.utils.XToastUtils;
 import com.xiaofeng.GoSports.utils.path.DbAdapter;
 import com.xiaofeng.GoSports.utils.path.PathRecord;
 import com.xiaofeng.GoSports.utils.path.RecordUtil;
-import com.xiaofeng.GoSports.utils.sms.SendSmsUtil;
+import com.xuexiang.xpage.annotation.Page;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xui.widget.dialog.strategy.impl.MaterialDialogStrategy;
 import com.xuexiang.xui.widget.toast.XToast;
@@ -69,7 +69,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RunningActivity extends AppCompatActivity implements LocationSource, AMapLocationListener, TraceListener {
+@Page
+public class RunningActivity extends Activity implements
+        LocationSource, AMapLocationListener, TraceListener {
     MapView mMapView = null;
     /**
      * 程序调试信息
@@ -164,8 +166,7 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         initpolyline();
     }
 
-    private void init() {
-        if (aMap == null) aMap = mMapView.getMap();
+    private void initCompoment() {
         /**
          * 设置控件
          */
@@ -177,11 +178,9 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         btn_start = (Button) findViewById(R.id.btn_running_start);
         btn_stop = (Button) findViewById(R.id.btn_running_stop);
         btn_pause = (Button) findViewById(R.id.btn_running_pause);
-        /**
-         * 设置监听启动和停止
-         */
-        initListeners();
-        mDialogLoader = DialogLoader.getInstance().setIDialogStrategy(new MaterialDialogStrategy());
+    }
+
+    private void initMap() {
         //设置地图的放缩级别
         aMap.moveCamera(CameraUpdateFactory.zoomTo(19));
         // 设置定位监听
@@ -205,6 +204,18 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                 //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
             }
         });
+        mTraceoverlay = new TraceOverlay(aMap);
+    }
+
+    private void init() {
+        if (aMap == null) aMap = mMapView.getMap();
+        initCompoment();
+        /**
+         * 设置监听启动和停止
+         */
+        initListeners();
+        mDialogLoader = DialogLoader.getInstance().setIDialogStrategy(new MaterialDialogStrategy());
+        initMap();
 
         //高德隐私政策弹窗
         if (!SettingUtils.isAgreeMapPrivacy()) {
@@ -213,8 +224,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
         SettingUtils.setIsAgreeMapPrivacy(true);
         //设置语音
         voiceUtils = new VoiceUtils(RunningActivity.this);
-        mTraceoverlay = new TraceOverlay(aMap);
-
     }
 
     public void initListeners() {
@@ -279,7 +288,6 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                     case UPDATE_TEXTVIEW:
                         updateTextView();
                         updateDistances();
-                        updateSteps();
                         updateHeartRates();
                         break;
                     default:
@@ -346,7 +354,25 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
 
             }
         });
+        /**
+         * 监听距离的变化，当距离变化完了，同步更新步数的变化
+         */
+        TextView_distance.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateSteps();
+            }
+        });
 
     }
 
@@ -552,15 +578,15 @@ public class RunningActivity extends AppCompatActivity implements LocationSource
                 mpolyline = aMap.addPolyline(mPolyoptions);
             }
         }
-//		if (mpolyline != null) {
-//			mpolyline.remove();
-//		}
-//		mPolyoptions.visible(true);
-//		mpolyline = mAMap.addPolyline(mPolyoptions);
-//			PolylineOptions newpoly = new PolylineOptions();
-//			mpolyline = mAMap.addPolyline(newpoly.addAll(mPolyoptions.getPoints()));
-//		}
+        if (mpolyline != null) {
+            mpolyline.remove();
+        }
+        mPolyoptions.visible(true);
+        mpolyline = aMap.addPolyline(mPolyoptions);
+        PolylineOptions newpoly = new PolylineOptions();
+        mpolyline = aMap.addPolyline(newpoly.addAll(mPolyoptions.getPoints()));
     }
+
 
     /**
      * 定位回调  在回调方法中调用“mListener.onLocationChanged(amapLocation);”可以在地图上显示系统小蓝点。
