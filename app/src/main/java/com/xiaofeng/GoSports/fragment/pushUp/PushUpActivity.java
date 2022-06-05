@@ -168,7 +168,6 @@ public class PushUpActivity extends Activity {
                 switch (msg.what) {
                     case UPDATE_TEXTVIEW:
                         updateTime();
-                        updateEnergyCost();
                         break;
                     default:
                         break;
@@ -328,6 +327,7 @@ public class PushUpActivity extends Activity {
                     count_up_down++;
                     btn_pushUp_count.setText(String.valueOf(count_up_down));
                     voiceUtils.speakWords(String.valueOf(count_up_down));
+                    updateEnergyCost();
                     if_longTimeInterval = false;
                     switch (count_up_down) {
                         case 10:

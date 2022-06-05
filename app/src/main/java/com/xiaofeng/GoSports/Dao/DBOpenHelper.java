@@ -48,6 +48,13 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                     "endTime varchar," +
                     "energyCost varchar," +
                     "pushUpCount varchar," +
+                    "costTime varchar)",
+            "CREATE TABLE IF NOT EXISTS skippingTable(" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "beginTime varchar," +
+                    "endTime varchar," +
+                    "energyCost varchar," +
+                    "jumpCount varchar," +
                     "costTime varchar)"
 
     };
@@ -111,6 +118,21 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                                 String energyCost, String pushUpCount, String costTime) {
         db.execSQL("INSERT INTO pushUpTable (beginTime,endTime,energyCost,pushUpCount,costTime) VALUES(?,?,?,?,?)",
                 new Object[]{beginTime, endTime, energyCost, pushUpCount, costTime});
+    }
+
+    /**
+     * 将一次跳绳的运动数据记录加入到数据库中
+     *
+     * @param beginTime
+     * @param endTime
+     * @param energyCost
+     * @param jumpCount
+     * @param costTime
+     */
+    public void addSkippingRecord(String beginTime, String endTime,
+                                  String energyCost, String jumpCount, String costTime) {
+        db.execSQL("INSERT INTO pushUpTable (beginTime,endTime,energyCost,pushUpCount,costTime) VALUES(?,?,?,?,?)",
+                new Object[]{beginTime, endTime, energyCost, jumpCount, costTime});
     }
 
     /**
