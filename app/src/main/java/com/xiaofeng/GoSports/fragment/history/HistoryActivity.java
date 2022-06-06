@@ -12,15 +12,17 @@ import com.xiaofeng.GoSports.fragment.Walking.RecordAdapter;
 import com.xiaofeng.GoSports.fragment.Walking.RecordShowActivity;
 import com.xiaofeng.GoSports.utils.path.DbAdapter;
 import com.xiaofeng.GoSports.utils.path.PathRecord;
+import com.xuexiang.xpage.annotation.Page;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author xiaofeng
- * @description
+ * @description 运动的历史记录
  * @date 2022/6/2.
  */
+@Page
 public class HistoryActivity extends Activity implements AdapterView.OnItemClickListener {
     private RecordAdapter mAdapter;
     private ListView mAllRecordListView;

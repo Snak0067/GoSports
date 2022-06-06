@@ -259,6 +259,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
                     /**
                      * 弹出对话框
                      */
+                    isPause = true;
                     mDialogLoader.showConfirmDialog(
                             SkippingActivity.this, "结束运动提示 \n 确认结束运动吗", "确认",
                             /**
@@ -295,7 +296,7 @@ public class SkippingActivity extends Activity implements SensorEventListener {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    isPause = !isPause;
+                                    isPause = false;
                                     XToast.normal(SkippingActivity.this, "运动继续").show();
                                     voiceUtils.speakWords("运动继续");
                                     dialogInterface.dismiss();

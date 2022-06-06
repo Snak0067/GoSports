@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:showIn="@layout/adapter_history_record_card_view_list_item">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.xuexiang.xui.widget.imageview.RadiusImageView
+                android:id="@+id/running_avatar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/running_icon"
+                app:riv_is_circle="true" />
+
+            <TextView
+                android:id="@+id/running_title_name"
+                style="@style/TextStyle.Explain"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginStart="4dp"
+                android:text="跑步记录"
+                android:textColor="@color/xui_config_color_pure_black" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/running_title_tag"
+            style="@style/TextStyle.Explain"
+            android:layout_gravity="end|center_vertical"
+            android:text="GoSports" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/sports_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="户外跑步"
+            android:textColor="#0C0C0C" />
+
+        <TextView
+            android:id="@+id/sports_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="6月3日20:26"
+            android:textAlignment="textEnd" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/running_total_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1.69公里"
+            android:textColor="#0C0C0C"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/running_total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="00:32:15"
+            android:textColor="#0C0C0C"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/running_total_steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="3209步"
+            android:textColor="#0C0C0C"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="#0C0C0C" />
+    </LinearLayout>
+
+
+</LinearLayout>

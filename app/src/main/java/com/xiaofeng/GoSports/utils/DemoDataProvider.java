@@ -20,6 +20,7 @@ package com.xiaofeng.GoSports.utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import com.xiaofeng.GoSports.Model.RunningInfo;
 import com.xiaofeng.GoSports.adapter.entity.NewInfo;
 import com.xiaofeng.GoSports.R;
 import com.xuexiang.xaop.annotation.MemoryCache;
@@ -127,6 +128,20 @@ public class DemoDataProvider {
         List<NewInfo> list = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             list.add(new NewInfo());
+        }
+        return list;
+    }
+
+    /**
+     * 用于占位的空信息
+     *
+     * @return
+     */
+    @MemoryCache
+    public static List<RunningInfo> getEmptyRunningInfo() {
+        List<RunningInfo> list = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            list.add(new RunningInfo());
         }
         return list;
     }

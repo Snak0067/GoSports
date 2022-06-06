@@ -74,6 +74,7 @@
         <activity android:name=".fragment.Walking.RecordShowActivity" />
         <activity android:name=".fragment.skipping.SkippingActivity" />
         <activity android:name=".fragment.pushUp.PushUpActivity" />
+        <activity android:name=".fragment.history.HistoryActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisteredActivity" />
         <activity

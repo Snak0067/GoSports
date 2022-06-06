@@ -101,7 +101,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
 
-
     private void initData() {
         //首次进入页面的弹窗提示框
         GuideTipsDialog.showTips(this);

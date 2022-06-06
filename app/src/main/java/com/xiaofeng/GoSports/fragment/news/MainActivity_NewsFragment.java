@@ -14,6 +14,7 @@ import com.alibaba.android.vlayout.layout.GridLayoutHelper;
 import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
 import com.xiaofeng.GoSports.core.BaseFragment;
 import com.xiaofeng.GoSports.fragment.Walking.WalkingActivity;
+import com.xiaofeng.GoSports.fragment.history.HistoryActivity;
 import com.xiaofeng.GoSports.fragment.pushUp.PushUpActivity;
 import com.xiaofeng.GoSports.fragment.running.RunningActivity;
 import com.xiaofeng.GoSports.fragment.skipping.SkippingActivity;
@@ -113,6 +114,9 @@ public class MainActivity_NewsFragment extends BaseFragment<FragmentNewsBinding>
                                 break;
                             case "跑步":
                                 ActivityUtils.startActivity(RunningActivity.class);
+                                break;
+                            case "历史记录":
+                                ActivityUtils.startActivity(HistoryActivity.class);
                                 break;
                             default:
                                 openNewPage(GridItemFragment.class, GridItemFragment.KEY_TITLE_NAME, item.getTitle());
