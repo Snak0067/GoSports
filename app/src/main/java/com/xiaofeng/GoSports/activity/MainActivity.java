@@ -146,6 +146,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     openNewPage(SettingsFragment.class);
                 } else if (id == R.id.nav_about) {
                     openNewPage(AboutFragment.class);
+                } else if (id == R.id.nav_notifications) {
+                    GuideTipsDialog.showTipsForce(this);
                 } else {
                     XToastUtils.toast("点击了:" + menuItem.getTitle());
                 }

@@ -118,6 +118,15 @@ public class MainActivity_NewsFragment extends BaseFragment<FragmentNewsBinding>
                             case "历史记录":
                                 ActivityUtils.startActivity(HistoryActivity.class);
                                 break;
+                            case "饮食安排":
+                                Utils.goWeb(getContext(), "https://zhuanlan.zhihu.com/p/24889097#:~:text=1.%E8%86%B3%E9%A3%9F%E7%9A%84%E5%AE%89%E6%8E%92%20%E5%88%9D%E5%AD%A6%E8%80%85%E9%87%87%E7%94%A8%E2%80%9C%E6%97%A5%E9%A3%9F5%E9%A4%90%E6%B3%95%E2%80%9D%E8%BE%83%E4%B8%BA%E5%90%88%E9%80%82%EF%BC%9A%E5%8D%B3%E6%AF%8F%E6%97%A5%E5%90%835%E6%AC%A1%E3%80%82,5%E9%A4%90%E7%9A%84%E6%AF%94%E4%BE%8B%E4%B8%BA%E6%97%A9%E9%A4%90%E5%8D%A0%E5%85%A8%E5%A4%A9%E6%80%BB%E9%87%8F%E7%9A%8420%25%EF%BC%8C%E4%B8%8A%E5%8D%88%E5%8A%A0%E9%A4%90%E5%8D%A010%25%EF%BC%8C%E5%8D%88%E9%A4%90%E5%8D%A030%25%EF%BC%8C%E4%B8%8B%E5%8D%88%E5%8A%A0%E9%A4%90%E5%8D%A010%25%EF%BC%8C%E6%99%9A%E9%A4%90%E5%8D%A030%25%E3%80%82%202.%E8%86%B3%E9%A3%9F%E7%9A%84%E7%BB%84%E6%88%90");
+                                break;
+                            case "心理测评":
+                                Utils.goWeb(getContext(), "https://xin.httpcn.com/fenlei/mianfei/");
+                                break;
+                            case "助眠音乐":
+                                Utils.goWeb(getContext(), "https://music.163.com/#/djradio?id=966559685");
+                                break;
                             default:
                                 openNewPage(GridItemFragment.class, GridItemFragment.KEY_TITLE_NAME, item.getTitle());
                         }

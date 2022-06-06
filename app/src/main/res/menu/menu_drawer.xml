@@ -28,11 +28,6 @@
         android:id="@+id/other"
         android:checkableBehavior="single">
 
-        <item
-            android:id="@+id/nav_search"
-            android:checkable="false"
-            android:icon="@drawable/ic_menu_search"
-            android:title="@string/menu_search" />
 
         <item
             android:id="@+id/nav_notifications"
@@ -40,11 +35,11 @@
             android:icon="@drawable/ic_menu_notifications"
             android:title="@string/menu_notifications" />
 
-        <item
-            android:id="@+id/nav_starred"
-            android:checkable="false"
-            android:icon="@drawable/ic_menu_star"
-            android:title="@string/menu_starred" />
+        <!--        <item-->
+        <!--            android:id="@+id/nav_starred"-->
+        <!--            android:checkable="false"-->
+        <!--            android:icon="@drawable/ic_menu_star"-->
+        <!--            android:title="@string/menu_starred" />-->
     </group>
 
     <group

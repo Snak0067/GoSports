@@ -23,7 +23,7 @@
                 android:id="@+id/running_avatar"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@mipmap/running_icon"
+                android:src="@mipmap/running_icon_new"
                 app:riv_is_circle="true" />
 
             <TextView

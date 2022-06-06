@@ -23,6 +23,7 @@ allprojects {
     addRepos(repositories)
     repositories {
         jcenter() // 或者 mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 
