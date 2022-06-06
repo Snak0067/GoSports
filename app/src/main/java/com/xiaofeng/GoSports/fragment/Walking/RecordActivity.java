@@ -17,13 +17,12 @@ import java.util.List;
 
 /**
  * 所有轨迹list展示activity
- *
  */
 public class RecordActivity extends Activity implements OnItemClickListener {
 
     private RecordAdapter mAdapter;
     private ListView mAllRecordListView;
-    private DbAdapter mDataBaseHelper;
+    private static DbAdapter mDataBaseHelper;
     private List<PathRecord> mAllRecord = new ArrayList<PathRecord>();
     public static final String RECORD_ID = "record_id";
 
@@ -43,6 +42,7 @@ public class RecordActivity extends Activity implements OnItemClickListener {
     private void searchAllRecordFromDB() {
         mAllRecord = mDataBaseHelper.queryRecordAll();
     }
+
 
     public void onBackClick(View view) {
         this.finish();

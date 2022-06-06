@@ -1,13 +1,7 @@
 package com.xiaofeng.GoSports.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -20,18 +14,17 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
-import com.amap.api.maps.MapsInitializer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.xiaofeng.GoSports.R;
 import com.xiaofeng.GoSports.core.BaseActivity;
 import com.xiaofeng.GoSports.core.BaseFragment;
+import com.xiaofeng.GoSports.databinding.ActivityMainBinding;
 import com.xiaofeng.GoSports.fragment.news.MainActivity_NewsFragment;
 import com.xiaofeng.GoSports.fragment.other.AboutFragment;
 import com.xiaofeng.GoSports.fragment.other.SettingsFragment;
 import com.xiaofeng.GoSports.fragment.profile.ProfileFragment;
 import com.xiaofeng.GoSports.fragment.trending.TrendingFragment;
 import com.xiaofeng.GoSports.utils.Utils;
-import com.xiaofeng.GoSports.R;
-import com.xiaofeng.GoSports.databinding.ActivityMainBinding;
 import com.xiaofeng.GoSports.utils.XToastUtils;
 import com.xiaofeng.GoSports.utils.sdkinit.XUpdateInit;
 import com.xiaofeng.GoSports.widget.GuideTipsDialog;

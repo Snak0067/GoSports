@@ -67,7 +67,6 @@ public class DbAdapter {
     }
 
     public DbAdapter open() throws SQLException {
-
         db = dbHelper.getWritableDatabase();
         return this;
     }

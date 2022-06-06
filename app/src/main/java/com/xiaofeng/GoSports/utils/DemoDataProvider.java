@@ -23,6 +23,8 @@ import android.graphics.drawable.Drawable;
 import com.xiaofeng.GoSports.Model.RunningInfo;
 import com.xiaofeng.GoSports.adapter.entity.NewInfo;
 import com.xiaofeng.GoSports.R;
+import com.xiaofeng.GoSports.utils.path.DbAdapter;
+import com.xiaofeng.GoSports.utils.path.PathRecord;
 import com.xuexiang.xaop.annotation.MemoryCache;
 import com.xuexiang.xui.adapter.simple.AdapterItem;
 import com.xuexiang.xui.utils.ResUtils;
@@ -103,6 +105,23 @@ public class DemoDataProvider {
         return list;
     }
 
+    /**
+     * 用于占位的空信息
+     *
+     * @return
+     */
+    @MemoryCache
+    public static List<RunningInfo> getRunningInfo(Context ctx) {
+        List<RunningInfo> list = new ArrayList<>();
+        List<PathRecord> mAllRecord = new ArrayList<PathRecord>();
+        DbAdapter mDataBaseHelper = new DbAdapter(ctx);
+        mDataBaseHelper.open();
+        mAllRecord = mDataBaseHelper.queryRecordAll();
+
+
+        return list;
+    }
+
     public static List<AdapterItem> getGridItems(Context context) {
         return getGridItems(context, R.array.grid_titles_entry, R.array.grid_icons_entry);
     }
@@ -145,5 +164,20 @@ public class DemoDataProvider {
         }
         return list;
     }
+
+    /**
+     * 用于占位的空信息
+     *
+     * @return
+     */
+    @MemoryCache
+    public static List<PathRecord> getEmptyPathRecord() {
+        List<PathRecord> list = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            list.add(new PathRecord());
+        }
+        return list;
+    }
+
 
 }
