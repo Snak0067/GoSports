@@ -598,8 +598,9 @@ public class RunningActivity extends Activity implements
         if (mListener != null && amapLocation != null) {
             if (amapLocation != null && amapLocation.getErrorCode() == 0) {
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
-                LatLng mylocation = new LatLng(amapLocation.getLatitude(),
-                        amapLocation.getLongitude());
+                //获取经度和纬度——LatLng是以纬度和经度表示的地理坐标点。
+                LatLng mylocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
+                //移动视图到定位原点
                 aMap.moveCamera(CameraUpdateFactory.changeLatLng(mylocation));
                 if (!isStop) {
                     record.addpoint(amapLocation);

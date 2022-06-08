@@ -133,7 +133,6 @@ public class PushUpActivity extends Activity {
                 } else {
                     XToastUtils.toast("已经在运动啦！");
                 }
-
             }
         });
         btn_pushUp_count.setOnClickListener(new View.OnClickListener() {

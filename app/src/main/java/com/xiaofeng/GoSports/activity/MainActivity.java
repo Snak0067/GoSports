@@ -1,5 +1,8 @@
 package com.xiaofeng.GoSports.activity;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -12,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -48,6 +52,12 @@ import com.xuexiang.xutil.display.Colors;
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, BottomNavigationView.OnNavigationItemSelectedListener, ClickUtils.OnClick2ExitListener, Toolbar.OnMenuItemClickListener {
 
     private String[] mTitles;
+    /**
+     * 存储权限的检查
+     */
+    public static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
 
     @Override
     protected ActivityMainBinding viewBindingInflate(LayoutInflater inflater) {
@@ -57,7 +67,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        verifyStoragePermissions(MainActivity.this);
         initViews();
 
         initData();
@@ -264,6 +274,47 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     public void onExit() {
         XUtil.exitApp();
+    }
+
+
+    /**
+     * 验证读取sd卡的权限
+     *
+     * @param activity
+     */
+    public boolean verifyStoragePermissions(Activity activity) {
+        /*******below android 6.0*******/
+        if (Build.VERSION.SDK_INT < 23) {
+            return true;
+        }
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+
+    /**
+     * 请求权限回调
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                XToastUtils.toast("授权成功");
+            } else {
+                XToastUtils.toast("授权失败,请去设置打开权限");
+            }
+        }
     }
 
 
