@@ -157,5 +157,9 @@
     <string name="animateX">Animate X</string>
     <string name="animateY">Animate Y</string>
     <string name="animateXY">Animate XY</string>
+    <string name="right_title_everyday_dump">每日跳绳记录</string>
+    <string name="right_title_time_analysis">运动时间分析</string>
+    <string name="right_title_radar_analysis">运动趋势分析</string>
+
 
 </resources>

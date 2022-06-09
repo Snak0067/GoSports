@@ -17,7 +17,7 @@ import com.xiaofeng.GoSports.fragment.Walking.WalkingActivity;
 import com.xiaofeng.GoSports.fragment.pushUp.PushUpActivity;
 import com.xiaofeng.GoSports.fragment.running.RunningActivity;
 import com.xiaofeng.GoSports.fragment.skipping.SkippingActivity;
-import com.xiaofeng.GoSports.fragment.analysis.AnalysisActivity;
+import com.xiaofeng.GoSports.fragment.analysis.AnalysisMainActivity;
 import com.xiaofeng.GoSports.utils.Utils;
 import com.xiaofeng.GoSports.R;
 import com.xiaofeng.GoSports.adapter.base.broccoli.BroccoliSimpleDelegateAdapter;
@@ -125,7 +125,7 @@ public class MainActivity_NewsFragment extends BaseFragment<FragmentNewsBinding>
                                 Utils.goWeb(getContext(), "https://music.163.com/#/djradio?id=966559685");
                                 break;
                             case "运动分析":
-                                ActivityUtils.startActivity(AnalysisActivity.class);
+                                ActivityUtils.startActivity(AnalysisMainActivity.class);
                                 break;
                             default:
                                 openNewPage(GridItemFragment.class, GridItemFragment.KEY_TITLE_NAME, item.getTitle());

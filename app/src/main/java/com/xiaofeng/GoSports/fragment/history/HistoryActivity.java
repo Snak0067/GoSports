@@ -54,8 +54,7 @@ public class HistoryActivity extends Activity implements AdapterView.OnItemClick
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        PathRecord recorditem = (PathRecord) parent.getAdapter().getItem(
-                position);
+        PathRecord recorditem = (PathRecord) parent.getAdapter().getItem(position);
         Intent intent = new Intent(HistoryActivity.this,
                 RecordShowActivity.class);
         intent.putExtra(RECORD_ID, recorditem.getId());

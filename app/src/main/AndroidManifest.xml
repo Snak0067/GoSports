@@ -77,8 +77,10 @@
         <activity android:name=".fragment.Walking.RecordShowActivity" />
         <activity android:name=".fragment.skipping.SkippingActivity" />
         <activity android:name=".fragment.pushUp.PushUpActivity" />
-        <activity android:name=".fragment.analysis.AnalysisActivity" />
+        <activity android:name=".fragment.analysis.AnalysisMainActivity" />
         <activity android:name=".fragment.history.HistoryActivity" />
+        <activity android:name=".fragment.analysis.AnalysisTrendActivity" />
+        <activity android:name=".fragment.analysis.AnalysisTimeActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisteredActivity" />
         <activity

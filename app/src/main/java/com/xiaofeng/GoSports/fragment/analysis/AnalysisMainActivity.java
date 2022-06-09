@@ -1,17 +1,14 @@
 package com.xiaofeng.GoSports.fragment.analysis;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -19,7 +16,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.xiaofeng.GoSports.R;
 
@@ -30,7 +26,7 @@ import java.util.ArrayList;
  * @description
  * @date 2022/6/7.
  */
-public class AnalysisActivity extends DemoBase implements SeekBar.OnSeekBarChangeListener {
+public class AnalysisMainActivity extends DemoBase implements SeekBar.OnSeekBarChangeListener {
 
     private BarChart chart;
     private SeekBar seekBarX, seekBarY;
@@ -43,7 +39,7 @@ public class AnalysisActivity extends DemoBase implements SeekBar.OnSeekBarChang
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_analysis);
 
-        setTitle("AnotherBarActivity");
+        setTitle("跳绳记录分析");
 
         tvX = findViewById(R.id.tvXMax);
         tvY = findViewById(R.id.tvYMax);
@@ -75,13 +71,31 @@ public class AnalysisActivity extends DemoBase implements SeekBar.OnSeekBarChang
         chart.getAxisLeft().setDrawGridLines(false);
 
         // setting data
-        seekBarX.setProgress(10);
-        seekBarY.setProgress(100);
+        seekBarX.setProgress(30);
+        seekBarY.setProgress(200);
 
         // add a nice and smooth animation
         chart.animateY(1500);
 
         chart.getLegend().setEnabled(false);
+
+        Button timeAnalysisButton = (Button) findViewById(R.id.time_analysis);
+        Button trendAnalysisButton = (Button) findViewById(R.id.radar_analysis);
+        Button dumpAnalysisButton = (Button) findViewById(R.id.everyday_dump);
+        timeAnalysisButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AnalysisMainActivity.this, AnalysisTimeActivity.class);
+                startActivity(intent);
+            }
+        });
+        trendAnalysisButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AnalysisMainActivity.this, AnalysisTrendActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -125,7 +139,6 @@ public class AnalysisActivity extends DemoBase implements SeekBar.OnSeekBarChang
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.bar, menu);
-        menu.removeItem(R.id.actionToggleIcons);
         return true;
     }
 
@@ -133,71 +146,19 @@ public class AnalysisActivity extends DemoBase implements SeekBar.OnSeekBarChang
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.viewGithub: {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse("https://github.com/PhilJay/MPAndroidChart/blob/master/MPChartExample/src/com/xxmassdeveloper/mpchartexample/AnotherBarActivity.java"));
-                startActivity(i);
+            case R.id.everyday_dump: {
+//                Intent intent1 = new Intent(AnalysisMainActivity.this, AnalysisMainActivity.class);
+//                startActivity(intent1);
                 break;
             }
-            case R.id.actionToggleValues: {
-
-                for (IDataSet set : chart.getData().getDataSets())
-                    set.setDrawValues(!set.isDrawValuesEnabled());
-
-                chart.invalidate();
+            case R.id.time_analysis: {
+                Intent intent = new Intent(AnalysisMainActivity.this, AnalysisTimeActivity.class);
+                startActivity(intent);
                 break;
             }
-            /*
-            case R.id.actionToggleIcons: { break; }
-             */
-            case R.id.actionToggleHighlight: {
-
-                if (chart.getData() != null) {
-                    chart.getData().setHighlightEnabled(!chart.getData().isHighlightEnabled());
-                    chart.invalidate();
-                }
-                break;
-            }
-            case R.id.actionTogglePinch: {
-                if (chart.isPinchZoomEnabled())
-                    chart.setPinchZoom(false);
-                else
-                    chart.setPinchZoom(true);
-
-                chart.invalidate();
-                break;
-            }
-            case R.id.actionToggleAutoScaleMinMax: {
-                chart.setAutoScaleMinMaxEnabled(!chart.isAutoScaleMinMaxEnabled());
-                chart.notifyDataSetChanged();
-                break;
-            }
-            case R.id.actionToggleBarBorders: {
-                for (IBarDataSet set : chart.getData().getDataSets())
-                    ((BarDataSet) set).setBarBorderWidth(set.getBarBorderWidth() == 1.f ? 0.f : 1.f);
-
-                chart.invalidate();
-                break;
-            }
-            case R.id.animateX: {
-                chart.animateX(2000);
-                break;
-            }
-            case R.id.animateY: {
-                chart.animateY(2000);
-                break;
-            }
-            case R.id.animateXY: {
-
-                chart.animateXY(2000, 2000);
-                break;
-            }
-            case R.id.actionSave: {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    saveToGallery();
-                } else {
-                    requestStoragePermission(chart);
-                }
+            case R.id.radar_analysis: {
+                Intent intent = new Intent(AnalysisMainActivity.this, AnalysisTrendActivity.class);
+                startActivity(intent);
                 break;
             }
         }

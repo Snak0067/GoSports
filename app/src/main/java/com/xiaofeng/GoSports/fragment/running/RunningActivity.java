@@ -526,9 +526,11 @@ public class RunningActivity extends Activity implements
             String duration = getDuration();
             float distance = getDistance(list);
             String average = getAverage(distance);
+
             String pathlineSring = getPathLineString(list);
             AMapLocation firstLocaiton = list.get(0);
             AMapLocation lastLocaiton = list.get(list.size() - 1);
+
             String stratpoint = amapLocationToString(firstLocaiton);
             String endpoint = amapLocationToString(lastLocaiton);
             DbHepler.createrecord(String.valueOf(distance), duration, average,

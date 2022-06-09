@@ -2,44 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/viewGithub"
-        android:title="@string/viewGithub">
+        android:id="@+id/everyday_dump"
+        android:title="@string/right_title_everyday_dump">
     </item>
     <item
-        android:id="@+id/actionToggleValues"
-        android:title="@string/actionToggleValues">
+        android:id="@+id/time_analysis"
+        android:title="@string/right_title_time_analysis">
     </item>
     <item
-        android:id="@+id/actionToggleIcons"
-        android:title="@string/actionToggleIcons">
+        android:id="@+id/radar_analysis"
+        android:title="@string/right_title_radar_analysis">
     </item>
-    <item
-        android:id="@+id/actionToggleHighlight"
-        android:title="@string/actionToggleHighlight">
-    </item>
-    <item
-        android:id="@+id/animateX"
-        android:title="@string/animateX">
-    </item>
-    <item
-        android:id="@+id/animateY"
-        android:title="@string/animateY">
-    </item>
-    <item
-        android:id="@+id/animateXY"
-        android:title="@string/animateXY">
-    </item>
-    <item
-        android:id="@+id/actionTogglePinch"
-        android:title="@string/actionTogglePinch">
-    </item>
-    <item
-        android:id="@+id/actionToggleAutoScaleMinMax"
-        android:title="@string/actionToggleAutoScale">
-    </item>
-    <item
-        android:id="@+id/actionSave"
-        android:title="@string/actionSave">
-    </item>
+
 
 </menu>
